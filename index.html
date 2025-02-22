@@ -64,6 +64,10 @@
             background-color: #4CAF50;
             color: white;
         }
+        /* 처음에 tbody에 기본 안내 문구만 보이도록 설정 */
+        #itemTable tbody {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -82,12 +86,14 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- 페이지 최초 진입 시 안내 문구가 보이도록 기본값 -->
                 <tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>
             </tbody>
         </table>
     </div>
     
     <script>
+        // 모든 아이템 (재료, 토용)
         let items = [
             // ============ 재료 ============
             { category: "재료", name: "자패", price: "1마일" },
@@ -204,23 +210,32 @@
         ];
         
         function filterItems() {
-            const searchText = document.getElementById("search").value.toLowerCase();
+            const searchText = document.getElementById("search").value.toLowerCase().trim();
             const tableBody = document.querySelector("#itemTable tbody");
-            tableBody.innerHTML = "";
             
+            // 만약 검색창이 비어있다면, 안내 문구만 보이도록
+            if (!searchText) {
+                tableBody.innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
+                return; 
+            }
+            
+            // 검색어가 있으면 필터 진행
             const filteredItems = items.filter(item => 
                 item.name.toLowerCase().includes(searchText)
             );
             
+            // 필터 결과에 따라 출력
             if (filteredItems.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan='3'>검색 결과가 없습니다.</td></tr>`;
             } else {
+                tableBody.innerHTML = "";
                 filteredItems.forEach(item => {
-                    let row = `<tr>
-                        <td>${item.category}</td>
-                        <td>${item.name}</td>
-                        <td>${item.price}</td>
-                    </tr>`;
+                    let row = `
+                        <tr>
+                            <td>${item.category}</td>
+                            <td>${item.name}</td>
+                            <td>${item.price}</td>
+                        </tr>`;
                     tableBody.innerHTML += row;
                 });
             }
