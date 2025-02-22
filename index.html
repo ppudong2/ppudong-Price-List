@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>뿌동숲 시세표</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
             font-family: 'Jua', sans-serif;
@@ -14,8 +14,13 @@
             padding: 20px;
         }
         h1 {
-            font-size: 3em;
+            font-size: 2.5em;
             color: #4CAF50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
         }
         .container {
             background: white;
@@ -62,7 +67,7 @@
     </style>
 </head>
 <body>
-    <h1>뿌동숲 시세표</h1>
+    <h1><i class="fa-solid fa-tree"></i> 뿌동숲 시세표 <i class="fa-solid fa-tree"></i></h1>
     <div class="container">
         <div class="search-box">
             <input type="text" id="search" placeholder="아이템 검색..." onkeyup="filterItems()">
@@ -81,29 +86,141 @@
             </tbody>
         </table>
     </div>
+    
     <script>
         let items = [
+            // ============ 재료 ============
+            { category: "재료", name: "자패", price: "1마일" },
+            { category: "재료", name: "산호", price: "1마일" },
+            { category: "재료", name: "방석고둥", price: "1마일" },
+            { category: "재료", name: "거거", price: "2마일" },
+            { category: "재료", name: "연잎성게", price: "1마일" },
+            { category: "재료", name: "뮤렉스조개", price: "1마일" },
+            { category: "재료", name: "바지락", price: "1마일" },
+            { category: "재료", name: "소라고둥", price: "1마일" },
+            { category: "재료", name: "녹슨 부품", price: "5마일" },
+            { category: "재료", name: "벌집", price: "2마일" },
+            { category: "재료", name: "염소자리 조각", price: "20마일" },
+            { category: "재료", name: "물병자리 조각", price: "20마일" },
+            { category: "재료", name: "물고기자리 조각", price: "20마일" },
+            { category: "재료", name: "양자리 조각", price: "20마일" },
+            { category: "재료", name: "황소자리 조각", price: "20마일" },
+            { category: "재료", name: "쌍둥이자리 조각", price: "20마일" },
+            { category: "재료", name: "게자리 조각", price: "20마일" },
+            { category: "재료", name: "사자자리 조각", price: "20마일" },
+            { category: "재료", name: "처녀자리 조각", price: "20마일" },
+            { category: "재료", name: "천칭자리 조각", price: "20마일" },
+            { category: "재료", name: "전갈자리 조각", price: "20마일" },
+            { category: "재료", name: "사수자리 조각", price: "20마일" },
+            { category: "재료", name: "사탕", price: "30마일" },
+            { category: "재료", name: "롤리팝", price: "40마일" },
             { category: "재료", name: "나뭇가지", price: "1마일" },
+            { category: "재료", name: "단단한 목재", price: "1마일" },
+            { category: "재료", name: "목재", price: "2마일" },
+            { category: "재료", name: "부드러운 목재", price: "1마일" },
+            { category: "재료", name: "대나무 토막", price: "1마일" },
+            { category: "재료", name: "돌", price: "1마일" },
+            { category: "재료", name: "철광석", price: "2마일" },
+            { category: "재료", name: "점토", price: "1마일" },
+            { category: "재료", name: "금광석", price: "20마일" },
+            { category: "재료", name: "별의 조각", price: "2마일" },
+            { category: "재료", name: "커다란 별의 조각", price: "20마일" },
             { category: "재료", name: "잡초", price: "1마일" },
-            { category: "가구", name: "5층탑", price: "30마일" },
-            { category: "가구", name: "ATM", price: "10마일" }
-        ];
+            { category: "재료", name: "여름 조개껍데기", price: "2마일" },
+            { category: "재료", name: "봄의 대나무", price: "5마일" },
+            { category: "재료", name: "벚꽃잎", price: "5마일" },
+            { category: "재료", name: "도토리", price: "10마일" },
+            { category: "재료", name: "솔방울", price: "10마일" },
+            { category: "재료", name: "죽순", price: "2마일" },
+            { category: "재료", name: "사과", price: "1마일" },
+            { category: "재료", name: "오렌지", price: "1마일" },
+            { category: "재료", name: "체리", price: "1마일" },
+            { category: "재료", name: "복숭아", price: "1마일" },
+            { category: "재료", name: "배", price: "1마일" },
+            { category: "재료", name: "호박", price: "1마일" },
+            { category: "재료", name: "토마토", price: "1마일" },
+            { category: "재료", name: "밀", price: "1마일" },
+            { category: "재료", name: "감자", price: "1마일" },
+            { category: "재료", name: "사탕수수", price: "1마일" },
+            { category: "재료", name: "당근", price: "1마일" },
+            { category: "재료", name: "단풍잎", price: "5마일" },
+            { category: "재료", name: "희귀 버섯", price: "10마일" },
+            { category: "재료", name: "멋진 버섯", price: "10마일" },
+            { category: "재료", name: "가는 버섯", price: "5마일" },
+            { category: "재료", name: "둥근 버섯", price: "5마일" },
+            { category: "재료", name: "넓은 버섯", price: "5마일" },
+            { category: "재료", name: "금 오너먼트", price: "5마일" },
+            { category: "재료", name: "파란색 오너먼트", price: "2~3마일" },
+            { category: "재료", name: "빨간색 오너먼트", price: "2~3마일" },
+            { category: "재료", name: "눈의 결정", price: "5마일" },
+            { category: "재료", name: "커다란 눈의 결정", price: "20마일" },
+            { category: "재료", name: "사랑의 결정", price: "10마일" },
+            { category: "재료", name: "빛이끼", price: "5마일" },
+            { category: "재료", name: "덩굴", price: "5마일" },
+            { category: "재료", name: "나뭇잎 달걀", price: "5마일" },
+            { category: "재료", name: "나무 달걀", price: "5마일" },
+            { category: "재료", name: "땅 달걀", price: "5마일" },
+            { category: "재료", name: "하늘 달걀", price: "5마일" },
+            { category: "재료", name: "물고기 달걀", price: "5마일" },
+            { category: "재료", name: "바위 달걀", price: "5마일" },
 
+            // ============ 토용 ============
+            { category: "토용", name: "가면 토용", price: "1마일" },
+            { category: "토용", name: "가시 토용", price: "1마일" },
+            { category: "토용", name: "꿀꿀 토용", price: "1마일" },
+            { category: "토용", name: "끼익 토용", price: "1마일" },
+            { category: "토용", name: "둠칫 토용", price: "1마일" },
+            { category: "토용", name: "둥둥 토용", price: "1마일" },
+            { category: "토용", name: "디링 토용", price: "1마일" },
+            { category: "토용", name: "딩동 토용", price: "1마일" },
+            { category: "토용", name: "딸깍 토용", price: "1마일" },
+            { category: "토용", name: "땡그랑 토용", price: "1마일" },
+            { category: "토용", name: "또록 토용", price: "1마일" },
+            { category: "토용", name: "똑딱 토용", price: "1마일" },
+            { category: "토용", name: "뚱땅 토용", price: "1마일" },
+            { category: "토용", name: "띠롱 토용", price: "1마일" },
+            { category: "토용", name: "마스터 토용", price: "60마일" },
+            { category: "토용", name: "멍멍 토용", price: "1마일" },
+            { category: "토용", name: "방울 토용", price: "1마일" },
+            { category: "토용", name: "베이비 토용", price: "1마일" },
+            { category: "토용", name: "베이스 토용", price: "1마일" },
+            { category: "토용", name: "벨 토용", price: "1마일" },
+            { category: "토용", name: "뵤옹 토용", price: "1마일" },
+            { category: "토용", name: "부웅 토용", price: "1마일" },
+            { category: "토용", name: "뽀삐 토용", price: "1마일" },
+            { category: "토용", name: "뽁 토용", price: "1마일" },
+            { category: "토용", name: "뿌우 토용", price: "1마일" },
+            { category: "토용", name: "삐뽀 토용", price: "1마일" },
+            { category: "토용", name: "삐융 토용", price: "1마일" },
+            { category: "토용", name: "쉐킷 토용", price: "1마일" },
+            { category: "토용", name: "양철 토용", price: "1마일" },
+            { category: "토용", name: "에코 토용", price: "1마일" },
+            { category: "토용", name: "우와와 토용", price: "1마일" },
+            { category: "토용", name: "지직 토용", price: "1마일" },
+            { category: "토용", name: "콰삭 토용", price: "1마일" },
+            { category: "토용", name: "툭툭 토용", price: "1마일" },
+            { category: "토용", name: "푸르르 토용", price: "1마일" },
+            { category: "토용", name: "후후 토용", price: "1마일" }
+        ];
+        
         function filterItems() {
             const searchText = document.getElementById("search").value.toLowerCase();
             const tableBody = document.querySelector("#itemTable tbody");
             tableBody.innerHTML = "";
             
             const filteredItems = items.filter(item => 
-                item.name.toLowerCase().includes(searchText) ||
-                item.category.toLowerCase().includes(searchText)
+                item.name.toLowerCase().includes(searchText)
             );
             
             if (filteredItems.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="3">검색 결과가 없습니다.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan='3'>검색 결과가 없습니다.</td></tr>`;
             } else {
                 filteredItems.forEach(item => {
-                    let row = `<tr><td>${item.category}</td><td>${item.name}</td><td>${item.price}</td></tr>`;
+                    let row = `<tr>
+                        <td>${item.category}</td>
+                        <td>${item.name}</td>
+                        <td>${item.price}</td>
+                    </tr>`;
                     tableBody.innerHTML += row;
                 });
             }
