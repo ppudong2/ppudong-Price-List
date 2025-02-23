@@ -43,6 +43,7 @@
       width: 25px;
       height: 20px;
       cursor: pointer;
+      vertical-align: middle;
     }
     .search-box .bar {
       height: 3px;
@@ -52,7 +53,7 @@
     }
     .search-box input {
       padding: 10px;
-      width: 60%;
+      width: 80%;
       border: 2px solid #4caf50;
       border-radius: 5px;
     }
@@ -64,11 +65,11 @@
       color: #4caf50;
       margin-left: 10px;
     }
-    /* 메뉴 (카테고리) - 오직 만지작, 알바만 표시 */
+    /* 메뉴: 오직 만지작과 알바만 표시 */
     .menu {
       position: absolute;
       top: 60px;
-      left: 20px;
+      left: 20px; /* 컨테이너 왼쪽과 맞춤 */
       background: #fff;
       border: 2px solid #4caf50;
       border-radius: 5px;
@@ -108,6 +109,7 @@
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
       max-width: 800px;
       margin: auto;
+      position: relative;
     }
     table {
       width: 100%;
@@ -193,14 +195,13 @@
 </head>
 <body>
   <div class="header-area">
-    <!-- 헤더 내의 햄버거 아이콘는 검색창 안에 배치할 예정이므로 여기선 숨김 -->
     <h1>
       <i class="fa-solid fa-tree"></i> 뿌동숲 시세표 <i class="fa-solid fa-tree"></i>
     </h1>
   </div>
 
   <div class="container">
-    <!-- 검색박스: 왼쪽에 메뉴 아이콘 -->
+    <!-- 검색박스: 검색창 왼쪽에 메뉴 아이콘 배치 -->
     <div class="search-box">
       <div class="hamburger" onclick="toggleMenu()">
         <div class="bar"></div>
@@ -210,7 +211,7 @@
       <input type="text" id="search" placeholder="아이템 검색..." onkeyup="filterItems()">
       <button class="search-button" onclick="filterItems()"><i class="fas fa-leaf"></i></button>
     </div>
-    <!-- 메뉴: 오직 '만지작'과 '알바'만 -->
+    <!-- 메뉴: 오직 '만지작'과 '알바'만 표시 -->
     <div class="menu" id="categoryMenu">
       <ul id="menuList">
         <li><button onclick="showCategory('만지작')">만지작</button></li>
@@ -330,7 +331,7 @@
       { category: "재료(1셋)", name: "당근", price: "1마일" },
       { category: "재료(1셋)", name: "단풍잎", price: "5마일" },
       { category: "재료(1셋)", name: "희귀 버섯", price: "10마일" },
-      { category: "재료(1셋)", name: "멋진 버섯", price: "10마일" },
+      { category: "재료(1셋)", name: "멋진 아이스 박스", price: "10마일" },
       { category: "재료(1셋)", name: "가는 버섯", price: "5마일" },
       { category: "재료(1셋)", name: "둥근 버섯", price: "5마일" },
       { category: "재료(1셋)", name: "넓은 버섯", price: "5마일" },
@@ -557,7 +558,7 @@
     }
 
     /********** 거래글(판매/구매) 및 로컬 스토리지 **********/
-    // 모드별 최종 문구 매핑 (“에서” 제거)
+    // 모드별 최종 문구 매핑 (최종 출력 시 "에서" 제거)
     const modeMapping = {
       "판매": "판매합니다",
       "구매": "구매합니다",
@@ -567,7 +568,7 @@
       "개방요청": "개방요청드립니다"
     };
     let tradeMode = "판매"; 
-    let cart = []; 
+    let cart = [];
 
     window.addEventListener("load", () => {
       const savedCart = localStorage.getItem("myCart");
@@ -590,7 +591,7 @@
       renderCart();
     }
 
-    // 아이템 추가: 같은 아이템이면 수량과 가격 합산 (재료는 '셋', 그 외는 '개')
+    // 아이템 추가: 동일 아이템이면 수량과 가격 합산 (재료는 '셋', 만지작/알바는 수량 표시 없이 단가*수량)
     function addToCart(itemName, itemPrice, itemCategory) {
       const qtyInput = document.getElementById("qty-" + itemName);
       let qtyVal = parseInt(qtyInput.value, 10) || 1;
@@ -618,7 +619,7 @@
       renderCart();
     }
 
-    // 장바구니 출력: 단위 표시 수정 ("셋"/"개") 및 각 항목 가격 합산 업데이트
+    // 장바구니 출력: 단위 처리
     function renderCart() {
       const cartView = document.getElementById("cartView");
       if (cart.length === 0) {
@@ -626,15 +627,24 @@
         return;
       }
       let lines = cart.map(item => {
-        let unit = (item.category === "재료(1셋)") ? "셋" : "개";
+        let unit = "";
+        // 재료(1셋)는 '셋', 그 외 중 만지작과 알바는 단위 없이, 나머지는 '개'
+        if (item.category === "재료(1셋)") {
+          unit = "셋";
+        } else if (item.category === "만지작" || item.category === "알바") {
+          unit = "";
+        } else {
+          unit = "개";
+        }
         let totalPrice = item.price * item.quantity;
-        return `${item.name} ${item.quantity}${unit} ${totalPrice}마일 <button class="item-delete-btn" onclick="removeFromCart('${item.name}')">삭제</button>`;
+        // 만약 unit이 없는 경우, 수량만 표시하지 않고 가격만 표시하도록 처리할 수 있음.
+        let qtyDisplay = (unit === "") ? "" : (item.quantity + unit);
+        return `${item.name} ${qtyDisplay} ${totalPrice}마일 <button class="item-delete-btn" onclick="removeFromCart('${item.name}')">삭제</button>`;
       });
       const resultText = lines.join(", ") + ` <strong>${modeMapping[tradeMode]}</strong>`;
       cartView.innerHTML = resultText;
     }
 
-    // 복사하기: 거래글 내용을 클립보드 복사
     function copyTradeText() {
       const text = document.getElementById("cartView").textContent;
       if (!text || text.includes("현재 담긴 아이템이 없습니다")) {
