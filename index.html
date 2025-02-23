@@ -310,8 +310,8 @@
 
   <!-- 사용자용 아이템 제출 섹션 (Firestore에만 저장됨, 홈페이지에 바로 반영되지 않음) -->
   <div class="user-submit-section">
-    <h2>아이템 제출 (일반 사용자용)</h2>
-    <p class="user-submit-guide">※ 시세표에 등록되지 않은 아이템이나 수정 요청이 있다면 자유롭게 제출해 주세요!</p>
+    <h2>아이템 제출</h2>
+    <p class="user-submit-guide">※시세표에 등록되지 않은 아이템을 자유롭게 제출해 주세요!</p>
     <div class="user-item-inputs">
       <select id="submissionCategory">
         <option value="재료(1셋)">재료(1셋)</option>
@@ -328,7 +328,7 @@
         <option value="조각">조각</option>
       </select>
       <input type="text" id="submissionItemName" placeholder="정확한 아이템 이름">
-      <input type="text" id="submissionItemPrice" placeholder="시세 (예: 10마일)">
+      <input type="text" id="submissionItemPrice" placeholder="시세(예:10마일)">
       <input type="text" id="submissionIsland" placeholder="섬/주대 이름">
     </div>
     <div>
@@ -341,8 +341,7 @@
   <div class="admin-submit-section">
     <h2>아이템 추가 &lt;관리자용&gt;</h2>
     <p class="admin-submit-guide">
-      ※ 등록 또는 삭제 요청을 위해 아이템을 제출합니다.<br>
-      (추가 시 시세 입력, 삭제 시 시세 입력란은 비워두고 삭제용 비밀번호 입력)
+      ※관리자용 아이템 등록 및 삭제.<br>
     </p>
     <div class="admin-item-inputs">
       <select id="userCategory">
@@ -359,8 +358,8 @@
         <option value="액자">액자</option>
         <option value="조각">조각</option>
       </select>
-      <input type="text" id="userItemName" placeholder="정확한 아이템 이름">
-      <input type="text" id="userItemPrice" placeholder="시세 (예: 10마일)">
+      <input type="text" id="userItemName" placeholder="아이템 이름">
+      <input type="text" id="userItemPrice" placeholder="시세">
       <input type="password" id="userPassword" placeholder="비밀번호">
     </div>
     <div>
@@ -650,7 +649,7 @@
 
       if (!name || !password) {
         resultDiv.style.color = "red";
-        resultDiv.textContent = "카테고리, 아이템 이름, 그리고 비밀번호는 필수 입력사항입니다.";
+        resultDiv.textContent = "카테고리, 아이템 이름, 비밀번호는 필수 입력사항입니다.";
         return;
       }
       
@@ -658,7 +657,7 @@
       if (price) {
         if (password !== ADD_PASSWORD) {
           resultDiv.style.color = "red";
-          resultDiv.textContent = "추가를 위한 비밀번호가 올바르지 않습니다.";
+          resultDiv.textContent = "비밀번호가 올바르지 않습니다.";
           return;
         }
         db.collection("userItems").add({
@@ -684,7 +683,7 @@
       else {
         if (password !== DELETE_PASSWORD) {
           resultDiv.style.color = "red";
-          resultDiv.textContent = "삭제를 위한 비밀번호가 올바르지 않습니다.";
+          resultDiv.textContent = "비밀번호가 올바르지 않습니다.";
           return;
         }
         db.collection("userItems")
@@ -728,7 +727,7 @@
 
       if (!name || !price || !island) {
         resultDiv.style.color = "red";
-        resultDiv.textContent = "카테고리, 정확한 아이템 이름, 시세, 그리고 섬/주대 이름은 필수 입력사항입니다.";
+        resultDiv.textContent = "카테고리, 정확한 아이템 이름, 시세, 섬/주대 이름은 필수 입력사항입니다.";
         return;
       }
 
