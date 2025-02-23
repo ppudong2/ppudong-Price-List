@@ -308,7 +308,7 @@
     </table>
   </div>
 
-  <!-- 사용자용 아이템 제출 섹션 (Firestore에만 저장됨, 홈페이지에는 바로 반영되지 않음) -->
+  <!-- 사용자용 아이템 제출 섹션 (Firestore에만 저장됨, 홈페이지에 바로 반영되지 않음) -->
   <div class="user-submit-section">
     <h2>아이템 제출 (일반 사용자용)</h2>
     <p class="user-submit-guide">※ 시세표에 등록되지 않은 아이템이나 수정 요청이 있다면 자유롭게 제출해 주세요!</p>
@@ -385,7 +385,7 @@
       return arr.sort((a, b) => a.name.localeCompare(b.name));
     }
     
-    // staticItems: 기존 모든 정적 아이템 데이터 – (아래는 전체 데이터를 누락 없이 포함한 예시입니다)
+    // staticItems: 기존 모든 정적 아이템 데이터 – (여기에 전체 데이터를 누락 없이 넣으세요)
     const staticItems = [
       // 재료(1셋)
       { category: "재료(1셋)", name: "자패", price: "1마일" },
@@ -549,9 +549,9 @@
         snapshot.forEach(doc => {
           userItems.push(doc.data());
         });
-        // 만약 검색창이 비어있다면 자동으로 시세표에 업데이트
+        // 검색창이 비어있으면 테이블에는 아무것도 표시하지 않음
         if(document.getElementById("search").value.trim() === ""){
-          displayItems([...staticItems, ...userItems]);
+          document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
         }
       });
     
@@ -581,7 +581,8 @@
       const searchText = document.getElementById("search").value.toLowerCase().trim();
       const tableBody = document.querySelector("#itemTable tbody");
       if (!searchText) {
-        displayItems([...staticItems, ...userItems]);
+        // 검색어가 없으면 테이블에는 기본 메시지만 보임
+        tableBody.innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
         return;
       }
       let filtered = [...staticItems, ...userItems].filter(item => 
@@ -629,10 +630,11 @@
       toggleMenu();
     }
     
-    // ====================== 전체보기 ======================
+    // ====================== 전체보기 (검색어 입력 없을 때는 아무것도 보이지 않음) ======================
     function showAll() {
       document.getElementById("search").value = "";
-      displayItems([...staticItems, ...userItems]);
+      // 전체보기 버튼을 눌렀을 때도 검색어가 없으면 기본 메시지만 보임
+      document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
       toggleMenu();
     }
     
