@@ -130,12 +130,12 @@
       background-color: #4caf50;
       color: white;
     }
-    /* 테이블 초기 메시지 (페이지 로드시 아무 아이템도 보이지 않음) */
+    /* 테이블 초기 메시지 (검색창이 비어있으면 메시지만 보임) */
     #itemTable tbody tr td {
       font-style: normal;
       color: #000;
     }
-    /* 사용자 제출 아이템 섹션 (일반 사용자용: Firestore에만 저장됨) */
+    /* 사용자용 아이템 제출 섹션 (일반 사용자용: Firestore에만 저장됨, 홈페이지에 바로 반영되지 않음) */
     .user-submit-section {
       margin: 20px auto;
       max-width: 800px;
@@ -145,7 +145,6 @@
       padding: 15px;
     }
     .user-submit-section h2 {
-      /* 변경된 부분: 폰트 색상을 뿌동숲 시세표와 동일하게 (#4caf50) */
       color: #4caf50;
       margin-top: 0;
     }
@@ -309,7 +308,7 @@
     </table>
   </div>
 
-  <!-- 사용자용 아이템 제출 섹션 (Firestore에만 저장됨, 홈페이지에 바로 반영되지 않음) -->
+  <!-- 사용자용 아이템 제출 섹션 (Firestore에만 저장됨, 홈페이지에는 바로 반영되지 않음) -->
   <div class="user-submit-section">
     <h2>아이템 제출 (일반 사용자용)</h2>
     <p class="user-submit-guide">※ 시세표에 등록되지 않은 아이템이나 수정 요청이 있다면 자유롭게 제출해 주세요!</p>
@@ -341,7 +340,8 @@
   <!-- 관리자용 아이템 제출 섹션 (데이터가 즉시 홈페이지에 반영됨) -->
   <div class="admin-submit-section">
     <h2>아이템 추가 &lt;관리자용&gt;</h2>
-    <p class="admin-submit-guide">※ 등록 또는 수정 요청을 위해 아이템을 제출합니다.<br>
+    <p class="admin-submit-guide">
+      ※ 등록 또는 삭제 요청을 위해 아이템을 제출합니다.<br>
       (추가 시 시세 입력, 삭제 시 시세 입력란은 비워두고 삭제용 비밀번호 입력)
     </p>
     <div class="admin-item-inputs">
@@ -385,7 +385,7 @@
       return arr.sort((a, b) => a.name.localeCompare(b.name));
     }
     
-    // staticItems: 기존 모든 정적 아이템 데이터 – (여기에 전체 데이터를 누락 없이 넣으세요)
+    // staticItems: 기존 모든 정적 아이템 데이터 – (아래는 전체 데이터를 누락 없이 포함한 예시입니다)
     const staticItems = [
       // 재료(1셋)
       { category: "재료(1셋)", name: "자패", price: "1마일" },
@@ -540,7 +540,7 @@
       { category: "조각", name: "무사의 조각", price: "10마일" }
     ];
     
-    // Firestore "userItems" 컬렉션의 데이터를 실시간 구독하여 관리자 제출 데이터(userItems)에 추가
+    // Firestore "userItems" 컬렉션의 데이터를 실시간 구독하여 관리자 제출 데이터(userItems)를 업데이트
     let userItems = [];
     db.collection("userItems")
       .orderBy("createdAt", "asc")
@@ -549,8 +549,8 @@
         snapshot.forEach(doc => {
           userItems.push(doc.data());
         });
-        // 업데이트는 검색 시나 카테고리 필터 시에만 반영 (초기에는 아무것도 표시하지 않음)
-        if(document.getElementById("search").value.trim() !== ""){
+        // 만약 검색창이 비어있다면 자동으로 시세표에 업데이트
+        if(document.getElementById("search").value.trim() === ""){
           displayItems([...staticItems, ...userItems]);
         }
       });
@@ -581,7 +581,7 @@
       const searchText = document.getElementById("search").value.toLowerCase().trim();
       const tableBody = document.querySelector("#itemTable tbody");
       if (!searchText) {
-        tableBody.innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
+        displayItems([...staticItems, ...userItems]);
         return;
       }
       let filtered = [...staticItems, ...userItems].filter(item => 
