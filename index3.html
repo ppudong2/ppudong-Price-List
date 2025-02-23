@@ -56,6 +56,14 @@
       width: 60%;
       border: 2px solid #4caf50;
       border-radius: 5px;
+      /* placeholder 수정 */
+    }
+    .search-box input::placeholder {
+      color: #4caf50;
+    }
+    .search-box input::placeholder {
+      /* 변경된 placeholder 내용 */
+      content: "아이템 이름";
     }
     .search-button {
       background: none;
@@ -65,7 +73,7 @@
       color: #4caf50;
       margin-left: 10px;
     }
-    /* 메뉴: 모든 카테고리 표시 (요청하신 순서 및 이름 적용) */
+    /* 메뉴 (카테고리) - 모든 카테고리 표시 (요청하신 순서 및 이름 적용) */
     .menu {
       position: absolute;
       top: 60px;
@@ -220,11 +228,18 @@
       margin-top: 0;
     }
     .user-submit-section input,
-    .user-submit-section select {
+    .user-submit-section select,
+    .user-submit-section textarea {
       padding: 8px;
       margin: 5px;
       border: 2px solid #4caf50;
       border-radius: 5px;
+      font-size: 0.9em;
+    }
+    .user-submit-section textarea {
+      width: 80%;
+      height: 60px;
+      resize: vertical;
     }
     .user-submit-section button {
       padding: 8px 12px;
@@ -278,7 +293,7 @@
         <div class="bar"></div>
         <div class="bar"></div>
       </div>
-      <input type="text" id="search" placeholder="아이템 검색..." onkeyup="filterItems()">
+      <input type="text" id="search" placeholder="아이템 이름 > 정확한 아이템 이름" onkeyup="filterItems()">
       <button class="search-button" onclick="filterItems()">
         <i class="fas fa-leaf"></i>
       </button>
@@ -348,26 +363,40 @@
     </div>
   </div>
 
-  <!-- 사용자 아이템 제출 섹션 -->
+  <!-- 사용자 아이템 제출 섹션 (Firestore 연동) -->
   <div class="user-submit-section">
     <h2>사용자 아이템 제출</h2>
-    <select id="userCategory">
-      <option value="재료(1셋)">재료(1셋)</option>
-      <option value="가구">가구</option>
-      <option value="레시피">레시피</option>
-      <option value="옷/신발/악세서리">옷/신발/악세서리</option>
-      <option value="인기 아이템">인기 아이템</option>
-      <option value="올클 레시피">올클 레시피</option>
-      <option value="올클 아이템">올클 아이템</option>
-      <option value="완제품">완제품</option>
-      <option value="만지작">만지작</option>
-      <option value="알바">알바</option>
-      <option value="액자">액자</option>
-      <option value="조각">조각</option>
-    </select>
-    <input type="text" id="userItemName" placeholder="아이템 이름">
-    <input type="text" id="userItemPrice" placeholder="시세 (예: 10마일)">
-    <button onclick="submitUserItem()">보내기</button>
+    <div>
+      <select id="userCategory">
+        <option value="재료(1셋)">재료(1셋)</option>
+        <option value="가구">가구</option>
+        <option value="레시피">레시피</option>
+        <option value="옷/신발/악세서리">옷/신발/악세서리</option>
+        <option value="인기 아이템">인기 아이템</option>
+        <option value="올클 레시피">올클 레시피</option>
+        <option value="올클 아이템">올클 아이템</option>
+        <option value="완제품">완제품</option>
+        <option value="만지작">만지작</option>
+        <option value="알바">알바</option>
+        <option value="액자">액자</option>
+        <option value="조각">조각</option>
+      </select>
+    </div>
+    <div>
+      <input type="text" id="userItemName" placeholder="정확한 아이템 이름">
+    </div>
+    <div>
+      <input type="text" id="userItemPrice" placeholder="시세 (예: 10마일)">
+    </div>
+    <div>
+      <input type="text" id="userIsland" placeholder="섬/주대 이름">
+    </div>
+    <div>
+      <textarea id="userSuggestion" placeholder="건의사항 (예: 오타, 시세 오류 등)"></textarea>
+    </div>
+    <div>
+      <button onclick="submitUserItem()">보내기</button>
+    </div>
     <div id="userItemResult"></div>
   </div>
 
@@ -732,11 +761,13 @@
       const category = document.getElementById("userCategory").value;
       const name = document.getElementById("userItemName").value.trim();
       const price = document.getElementById("userItemPrice").value.trim();
+      const island = document.getElementById("userIsland").value.trim();
+      const suggestion = document.getElementById("userSuggestion").value.trim();
       const resultDiv = document.getElementById("userItemResult");
 
-      if (!name || !price) {
+      if (!name || !price || !island) {
         resultDiv.style.color = "red";
-        resultDiv.textContent = "모든 필드를 입력해주세요.";
+        resultDiv.textContent = "카테고리, 아이템 이름, 시세, 그리고 섬/주대 이름은 필수 입력사항입니다.";
         return;
       }
 
@@ -745,6 +776,8 @@
         category: category,
         name: name,
         price: price,
+        island: island,
+        suggestion: suggestion,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       })
       .then(() => {
@@ -752,6 +785,8 @@
         resultDiv.textContent = "아이템이 제출되었습니다.";
         document.getElementById("userItemName").value = "";
         document.getElementById("userItemPrice").value = "";
+        document.getElementById("userIsland").value = "";
+        document.getElementById("userSuggestion").value = "";
       })
       .catch((error) => {
         console.error("Error adding document: ", error);
