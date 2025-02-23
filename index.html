@@ -191,9 +191,10 @@
     .item-delete-btn:hover {
       background-color: #fbb;
     }
-    /* Footer 스타일: 글꼴 색상을 회색, 글씨체를 굴림체로 지정 */
+    /* Footer 스타일 */
     footer {
       margin-top: 30px;
+      padding: 10px;
       font-size: 0.8em;
       color: #808080;
       font-family: "Gulim", sans-serif;
@@ -209,7 +210,7 @@
 </head>
 <body>
   <div class="header-area">
-    <!-- 제목을 클릭하면 페이지 새로고침 -->
+    <!-- 제목 클릭 시 새로고침 -->
     <h1 onclick="location.reload()">
       <i class="fa-solid fa-tree"></i> 뿌동숲 시세표 <i class="fa-solid fa-tree"></i>
     </h1>
@@ -228,15 +229,16 @@
         <i class="fas fa-leaf"></i>
       </button>
     </div>
-    <!-- 메뉴: 모든 카테고리 표시 -->
+    <!-- 메뉴: 모든 카테고리 표시 (요청하신 순서와 이름 적용) -->
     <div class="menu" id="categoryMenu">
       <ul id="menuList">
         <li><button onclick="showCategory('재료(1셋)')">재료(1셋)</button></li>
-        <li><button onclick="showCategory('토용')">토용</button></li>
+        <li><button onclick="showCategory('가구')">가구</button></li>
         <li><button onclick="showCategory('레시피')">레시피</button></li>
+        <li><button onclick="showCategory('옷/신발/악세서리')">옷/신발/악세서리</button></li>
+        <li><button onclick="showCategory('인기 아이템')">인기 아이템</button></li>
         <li><button onclick="showCategory('올클 레시피')">올클 레시피</button></li>
         <li><button onclick="showCategory('올클 아이템')">올클 아이템</button></li>
-        <li><button onclick="showCategory('희귀 아이템')">희귀 아이템</button></li>
         <li><button onclick="showCategory('완제품')">완제품</button></li>
         <li><button onclick="showCategory('만지작')">만지작</button></li>
         <li><button onclick="showCategory('알바')">알바</button></li>
@@ -421,9 +423,6 @@
       { category: "토용", name: "후후 토용", price: "1마일" },
 
       // ============ 레시피 ============
-      { category: "레시피", name: "일반 레시피", price: "1마일" },
-      { category: "레시피", name: "계절 레시피", price: "20마일" },
-      { category: "레시피", name: "겨울 레시피", price: "30마일" },
       { category: "레시피", name: "금 잠자리채 레시피", price: "200마일" },
       { category: "레시피", name: "금 삽 레시피", price: "200마일" },
       { category: "레시피", name: "금 낚싯대 레시피", price: "200마일" },
@@ -431,11 +430,26 @@
       { category: "레시피", name: "부옥이 레시피", price: "10마일-20마일" },
       { category: "레시피", name: "빛이끼&덩굴 레시피", price: "5마일-10마일" },
       { category: "레시피", name: "머메이드 레시피", price: "10~20마일" },
-      { category: "레시피", name: "돈다발 레시피", price: "20~30마일" },
       { category: "레시피", name: "목제 간이 창고 레시피", price: "10마일" },
       { category: "레시피", name: "야광 벽 스티커 레시피", price: "20마일" },
       { category: "레시피", name: "얼음 미니 눈사람 레시피", price: "120마일" },
-      { category: "레시피", name: "막대 아이스크림 레시피", price: "100마일" },
+      { category: "레시피", name: "금장미 리스 레시피", price: "20마일" },
+      { category: "레시피", name: "국화 화관 레시피", price: "10마일" },
+      { category: "레시피", name: "낮은 나무 울타리 레시피", price: "20마일" },
+      { category: "레시피", name: "넓은 버섯 레시피", price: "5마일" },
+      { category: "레시피", name: "달 레시피", price: "10마일" },
+      { category: "레시피", name: "돈다발 레시피", price: "20마일" },
+      { category: "레시피", name: "버섯 램프 레시피", price: "30마일" },
+      { category: "레시피", name: "벚꽃 미니백 레시피", price: "30마일" },
+      { category: "레시피", name: "야광 벽 스티커 레시피", price: "20마일" },
+      { category: "레시피", name: "얼음 미니 눈사람 레시피", price: "120마일" },
+      { category: "레시피", name: "얼음 테이블 레시피", price: "30마일" },
+      { category: "레시피", name: "유인용 오리 레시피", price: "2마일" },
+      { category: "레시피", name: "초록낙엽 레시피", price: "30마일" },
+      { category: "레시피", name: "큐트 장미 화관 레시피", price: "10마일" },
+      { category: "레시피", name: "큐트 튤립 리스 레시피", price: "10마일" },
+      { category: "레시피", name: "푸른 장미 화관 레시피", price: "20마일" },
+      { category: "레시피", name: "이스터 울타리 레시피", price: "5마일" },
 
       // ============ 올클 레시피 ============
       { category: "올클 레시피", name: "벚꽃 레시피 (15종)", price: "400마일" },
@@ -461,22 +475,22 @@
       { category: "올클 아이템", name: "음악 (107종)", price: "300마일" },
       { category: "올클 아이템", name: "NPC 액자 (62종)", price: "1600마일" },
 
-      // ============ 희귀 아이템 ============
-      { category: "희귀 아이템", name: "스코틀랜드 모자", price: "20마일" },
-      { category: "희귀 아이템", name: "복고양이", price: "20마일" },
-      { category: "희귀 아이템", name: "5층탑", price: "30마일" },
-      { category: "희귀 아이템", name: "해적통", price: "30마일" },
-      { category: "희귀 아이템", name: "넘어진 해적통", price: "30마일" },
-      { category: "희귀 아이템", name: "DAL MA-1", price: "30마일" },
-      { category: "희귀 아이템", name: "DAL 비행기 모형", price: "50마일" },
-      { category: "희귀 아이템", name: "생선건조대", price: "30마일" },
-      { category: "희귀 아이템", name: "닻 장식", price: "10마일" },
-      { category: "희귀 아이템", name: "멋진 아이스 박스", price: "10마일" },
-      { category: "희귀 아이템", name: "개미집", price: "20마일" },
-      { category: "희귀 아이템", name: "원목채집통", price: "10마일" },
-      { category: "희귀 아이템", name: "낯선고양이 가방", price: "25마일" },
-      { category: "희귀 아이템", name: "분리수거 종이 묶음", price: "30마일" },
-      { category: "희귀 아이템", name: "위대한 조각", price: "60마일" },
+      // ============ 인기 아이템 (이전 희귀 아이템) ============
+      { category: "인기 아이템", name: "스코틀랜드 모자", price: "20마일" },
+      { category: "인기 아이템", name: "복고양이", price: "20마일" },
+      { category: "인기 아이템", name: "5층탑", price: "30마일" },
+      { category: "인기 아이템", name: "해적통", price: "30마일" },
+      { category: "인기 아이템", name: "넘어진 해적통", price: "30마일" },
+      { category: "인기 아이템", name: "DAL MA-1", price: "30마일" },
+      { category: "인기 아이템", name: "DAL 비행기 모형", price: "50마일" },
+      { category: "인기 아이템", name: "생선건조대", price: "30마일" },
+      { category: "인기 아이템", name: "닻 장식", price: "10마일" },
+      { category: "인기 아이템", name: "멋진 아이스 박스", price: "10마일" },
+      { category: "인기 아이템", name: "개미집", price: "20마일" },
+      { category: "인기 아이템", name: "원목채집통", price: "10마일" },
+      { category: "인기 아이템", name: "낯선고양이 가방", price: "25마일" },
+      { category: "인기 아이템", name: "분리수거 종이 묶음", price: "30마일" },
+      { category: "인기 아이템", name: "위대한 조각", price: "60마일" },
 
       // ============ 완제품 (도구) ============
       { category: "완제품", name: "금 낚싯대", price: "2마일" },
