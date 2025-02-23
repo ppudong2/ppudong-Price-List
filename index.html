@@ -24,6 +24,7 @@
       white-space: nowrap;
       margin: 0;
       padding: 20px 0;
+      cursor: pointer;
     }
     .header-area {
       position: relative;
@@ -190,11 +191,26 @@
     .item-delete-btn:hover {
       background-color: #fbb;
     }
+    /* Footer 스타일: 글꼴 색상을 회색, 글씨체를 굴림체로 지정 */
+    footer {
+      margin-top: 30px;
+      font-size: 0.8em;
+      color: #808080;
+      font-family: "Gulim", sans-serif;
+    }
+    footer a {
+      color: #808080;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <div class="header-area">
-    <h1>
+    <!-- 제목을 클릭하면 페이지 새로고침 -->
+    <h1 onclick="location.reload()">
       <i class="fa-solid fa-tree"></i> 뿌동숲 시세표 <i class="fa-solid fa-tree"></i>
     </h1>
   </div>
@@ -208,7 +224,9 @@
         <div class="bar"></div>
       </div>
       <input type="text" id="search" placeholder="아이템 검색..." onkeyup="filterItems()">
-      <button class="search-button" onclick="filterItems()"><i class="fas fa-leaf"></i></button>
+      <button class="search-button" onclick="filterItems()">
+        <i class="fas fa-leaf"></i>
+      </button>
     </div>
     <!-- 메뉴: 모든 카테고리 표시 -->
     <div class="menu" id="categoryMenu">
@@ -271,6 +289,13 @@
       <button onclick="copyTradeText()">복사하기</button>
     </div>
   </div>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 뿌동이. All Rights Reserved.<br>
+    제작: 뿌동이<br>
+    Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">https://www.instagram.com/ppudong2/</a>
+  </footer>
 
   <script>
     /************* 기본 시세표 기능 *************/
@@ -597,7 +622,7 @@
       renderCart();
     }
 
-    // 아이템 추가: 동일 아이템이면 수량과 총 가격 합산 (재료는 '셋', 그 외는 '개')
+    // 아이템 추가: 같은 아이템이면 수량과 총 가격 합산 (재료는 '셋', 그 외는 '개')
     function addToCart(itemName, itemPrice, itemCategory) {
       const qtyInput = document.getElementById("qty-" + itemName);
       let qtyVal = parseInt(qtyInput.value, 10) || 1;
