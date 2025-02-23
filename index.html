@@ -60,7 +60,6 @@
     .search-box input::placeholder {
       color: #4caf50;
     }
-    /* placeholder 문구를 "아이템 이름"으로 변경 */
     .search-button {
       background: none;
       border: none;
@@ -146,7 +145,8 @@
       padding: 15px;
     }
     .user-submit-section h2 {
-      color: #808080;
+      /* 변경된 부분: 폰트 색상을 뿌동숲 시세표와 동일하게 (#4caf50) */
+      color: #4caf50;
       margin-top: 0;
     }
     .user-submit-guide {
@@ -178,7 +178,7 @@
     .user-item-inputs input#submissionIsland {
       width: 150px;
     }
-    /* 관리자용 아이템 제출 섹션 (홈페이지에 바로 반영됨) */
+    /* 관리자용 아이템 제출 섹션 (데이터가 즉시 홈페이지에 반영됨) */
     .admin-submit-section {
       margin: 20px auto;
       max-width: 800px;
@@ -361,7 +361,6 @@
       </select>
       <input type="text" id="userItemName" placeholder="정확한 아이템 이름">
       <input type="text" id="userItemPrice" placeholder="시세 (예: 10마일)">
-      <!-- 관리자용은 비밀번호 입력 (추가 시: 0998star, 삭제 시: 0998dstar) -->
       <input type="password" id="userPassword" placeholder="비밀번호">
     </div>
     <div>
