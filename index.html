@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>뿌동숲 시세표</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    body {
+      font-family: "Jua", sans-serif;
+      background-color: #f8f3c8;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 {
+      font-size: 2.5em;
+      color: #4caf50;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      margin: 0;
+      padding: 20px 0;
+      cursor: pointer;
+    }
+    .header-area {
+      position: relative;
+    }
+    /* 검색창 안에 메뉴 아이콘 배치 */
+    .search-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .search-box .hamburger {
+      margin-right: 10px;
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 25px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .search-box .bar {
+      height: 3px;
+      width: 25px;
+      background-color: #4caf50;
+      border-radius: 2px;
+    }
+    .search-box input {
+      padding: 10px;
+      width: 60%;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      /* placeholder 수정 */
+    }
+    .search-box input::placeholder {
+      color: #4caf50;
+    }
+    .search-box input::placeholder {
+      /* 변경된 placeholder 내용 */
+      content: "아이템 이름";
+    }
+    .search-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.5em;
+      color: #4caf50;
+      margin-left: 10px;
+    }
+    /* 메뉴 (카테고리) - 모든 카테고리 표시 (요청하신 순서 및 이름 적용) */
+    .menu {
+      position: absolute;
+      top: 60px;
+      left: 20px;
+      background: #fff;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      width: 160px;
+      padding: 10px;
+      display: none;
+      z-index: 999;
+    }
+    .menu.show {
+      display: block;
+    }
+    .menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .menu li {
+      margin: 10px 0;
+    }
+    .menu button {
+      width: 100%;
+      background: #f8f3c8;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      padding: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .menu button:hover {
+      background: #e0dab0;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: auto;
+      position: relative;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #4caf50;
+      color: white;
+    }
+    /* 거래글 작성 섹션 */
+    .trade-section {
+      margin: 20px auto;
+      text-align: center;
+      max-width: 800px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+    }
+    .trade-section h2 {
+      margin-top: 0;
+      color: #4caf50;
+    }
+    .mode-select {
+      margin-bottom: 10px;
+    }
+    .mode-select label {
+      margin: 0 5px;
+      font-size: 0.9em;
+    }
+    .cart-items {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #333;
+      background: #faf8e8;
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 60px;
+    }
+    .cart-empty {
+      color: #999;
+    }
+    .quantity-input {
+      width: 50px;
+      text-align: center;
+    }
+    /* 거래글 관리 버튼 */
+    .cart-actions {
+      margin-top: 10px;
+    }
+    .cart-actions button {
+      margin: 0 5px;
+      padding: 6px 12px;
+      border: 2px solid #4caf50;
+      background-color: #f8f3c8;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .cart-actions button:hover {
+      background-color: #e0dab0;
+    }
+    /* 개별 아이템 삭제 버튼 */
+    .item-delete-btn {
+      margin-left: 5px;
+      padding: 2px 6px;
+      font-size: 0.8em;
+      border: 1px solid #d33;
+      background-color: #fdd;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .item-delete-btn:hover {
+      background-color: #fbb;
+    }
+    /* Footer 스타일 */
+    footer {
+      margin-top: 30px;
+      padding: 10px;
+      font-size: 0.8em;
+      color: #808080;
+      font-family: "Gulim", sans-serif;
+    }
+    footer a {
+      color: #808080;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+    /* 사용자 아이템 제출 섹션 */
+    .user-submit-section {
+      margin: 20px auto;
+      max-width: 800px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+    }
+    .user-submit-section h2 {
+      color: #4caf50;
+      margin-top: 0;
+    }
+    .user-submit-section input,
+    .user-submit-section select,
+    .user-submit-section textarea {
+      padding: 8px;
+      margin: 5px;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+    .user-submit-section textarea {
+      width: 80%;
+      height: 60px;
+      resize: vertical;
+    }
+    .user-submit-section button {
+      padding: 8px 12px;
+      margin: 5px;
+      border: 2px solid #4caf50;
+      background-color: #f8f3c8;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .user-submit-section button:hover {
+      background-color: #e0dab0;
+    }
+  </style>
+  
+  <!-- Firebase SDK (compat 버전) 추가 -->
+  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore-compat.js"></script>
+  <!-- Analytics 사용 시 (필요하면 활성화)
+  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics-compat.js"></script>
+  -->
+  <!-- Firebase 초기화 및 설정 -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-EdZtqc1b9gp67OliSdJ7bWPNgEGUM7A",
+      authDomain: "ppudong-price-list.firebaseapp.com",
+      projectId: "ppudong-price-list",
+      storageBucket: "ppudong-price-list.firebasestorage.app",
+      messagingSenderId: "581105229110",
+      appId: "1:581105229110:web:870b7730b5b1271302a797",
+      measurementId: "G-6JYJ3W5KEH"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    // firebase.analytics(); // Analytics 사용 시 활성화
+  </script>
+</head>
+<body>
+  <div class="header-area">
+    <!-- 제목 클릭 시 새로고침 -->
+    <h1 onclick="location.reload()">
+      <i class="fa-solid fa-tree"></i> 뿌동숲 시세표 <i class="fa-solid fa-tree"></i>
+    </h1>
+  </div>
+
+  <div class="container">
+    <!-- 검색박스: 왼쪽에 메뉴 아이콘, 오른쪽에 검색창과 버튼 -->
+    <div class="search-box">
+      <div class="hamburger" onclick="toggleMenu()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <input type="text" id="search" placeholder="아이템 이름 > 정확한 아이템 이름" onkeyup="filterItems()">
+      <button class="search-button" onclick="filterItems()">
+        <i class="fas fa-leaf"></i>
+      </button>
+    </div>
+    <!-- 메뉴: 모든 카테고리 표시 (요청하신 순서 및 이름 적용) -->
+    <div class="menu" id="categoryMenu">
+      <ul id="menuList">
+        <li><button onclick="showCategory('재료(1셋)')">재료(1셋)</button></li>
+        <li><button onclick="showCategory('가구')">가구</button></li>
+        <li><button onclick="showCategory('레시피')">레시피</button></li>
+        <li><button onclick="showCategory('옷/신발/악세서리')">옷/신발/악세서리</button></li>
+        <li><button onclick="showCategory('인기 아이템')">인기 아이템</button></li>
+        <li><button onclick="showCategory('올클 레시피')">올클 레시피</button></li>
+        <li><button onclick="showCategory('올클 아이템')">올클 아이템</button></li>
+        <li><button onclick="showCategory('완제품')">완제품</button></li>
+        <li><button onclick="showCategory('만지작')">만지작</button></li>
+        <li><button onclick="showCategory('알바')">알바</button></li>
+        <li><button onclick="showCategory('액자')">액자</button></li>
+        <li><button onclick="showCategory('조각')">조각</button></li>
+        <li><button onclick="showAll()">전체보기</button></li>
+      </ul>
+    </div>
+    <table id="itemTable">
+      <thead>
+        <tr>
+          <th>카테고리</th>
+          <th>아이템</th>
+          <th>시세</th>
+          <th>추가</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="4">검색 결과가 여기에 표시됩니다.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 거래글 작성 섹션 -->
+  <div class="trade-section">
+    <h2>거래글 작성</h2>
+    <div class="mode-select">
+      <label>
+        <input type="radio" name="tradeMode" value="판매" checked onclick="setTradeMode('판매')"> 판매
+      </label>
+      <label>
+        <input type="radio" name="tradeMode" value="구매" onclick="setTradeMode('구매')"> 구매
+      </label>
+      <label>
+        <input type="radio" name="tradeMode" value="알바구인" onclick="setTradeMode('알바구인')"> 알바구인
+      </label>
+      <label>
+        <input type="radio" name="tradeMode" value="알바구직" onclick="setTradeMode('알바구직')"> 알바구직
+      </label>
+      <label>
+        <input type="radio" name="tradeMode" value="개방" onclick="setTradeMode('개방')"> 개방
+      </label>
+      <label>
+        <input type="radio" name="tradeMode" value="개방요청" onclick="setTradeMode('개방요청')"> 개방요청
+      </label>
+    </div>
+    <div class="cart-items" id="cartView">
+      <!-- 장바구니 내용 출력 -->
+    </div>
+    <div class="cart-actions">
+      <button onclick="clearCart()">전체 삭제</button>
+      <button onclick="copyTradeText()">복사하기</button>
+    </div>
+  </div>
+
+  <!-- 사용자 아이템 제출 섹션 (Firestore 연동) -->
+  <div class="user-submit-section">
+    <h2>사용자 아이템 제출</h2>
+    <div>
+      <select id="userCategory">
+        <option value="재료(1셋)">재료(1셋)</option>
+        <option value="가구">가구</option>
+        <option value="레시피">레시피</option>
+        <option value="옷/신발/악세서리">옷/신발/악세서리</option>
+        <option value="인기 아이템">인기 아이템</option>
+        <option value="올클 레시피">올클 레시피</option>
+        <option value="올클 아이템">올클 아이템</option>
+        <option value="완제품">완제품</option>
+        <option value="만지작">만지작</option>
+        <option value="알바">알바</option>
+        <option value="액자">액자</option>
+        <option value="조각">조각</option>
+      </select>
+    </div>
+    <div>
+      <input type="text" id="userItemName" placeholder="정확한 아이템 이름">
+    </div>
+    <div>
+      <input type="text" id="userItemPrice" placeholder="시세 (예: 10마일)">
+    </div>
+    <div>
+      <input type="text" id="userIsland" placeholder="섬/주대 이름">
+    </div>
+    <div>
+      <textarea id="userSuggestion" placeholder="건의사항 (예: 오타, 시세 오류 등)"></textarea>
+    </div>
+    <div>
+      <button onclick="submitUserItem()">보내기</button>
+    </div>
+    <div id="userItemResult"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 뿌동이. All Rights Reserved.<br>
+    제작: 뿌동이<br>
+    Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">https://www.instagram.com/ppudong2/</a>
+  </footer>
+
+  <script>
+    /************* 기본 시세표 기능 *************/
+    function toggleMenu() {
+      document.getElementById("categoryMenu").classList.toggle("show");
+    }
+    function sortByName(arr) {
+      return arr.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    // 전체 아이템 배열 (모든 아이템)
+    let items = [
+      // ============ 재료(1셋) ============
+      { category: "재료(1셋)", name: "자패", price: "1마일" },
+      { category: "재료(1셋)", name: "산호", price: "1마일" },
+      { category: "재료(1셋)", name: "방석고둥", price: "1마일" },
+      { category: "재료(1셋)", name: "거거", price: "2마일" },
+      { category: "재료(1셋)", name: "연잎성게", price: "1마일" },
+      { category: "재료(1셋)", name: "뮤렉스조개", price: "1마일" },
+      { category: "재료(1셋)", name: "바지락", price: "1마일" },
+      { category: "재료(1셋)", name: "소라고둥", price: "1마일" },
+      { category: "재료(1셋)", name: "녹슨 부품", price: "5마일" },
+      { category: "재료(1셋)", name: "벌집", price: "2마일" },
+      { category: "재료(1셋)", name: "염소자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "물병자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "물고기자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "양자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "황소자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "쌍둥이자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "게자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "사자자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "처녀자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "천칭자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "전갈자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "사수자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "사탕", price: "30마일" },
+      { category: "재료(1셋)", name: "롤리팝", price: "40마일" },
+      { category: "재료(1셋)", name: "나뭇가지", price: "1마일" },
+      { category: "재료(1셋)", name: "단단한 목재", price: "1마일" },
+      { category: "재료(1셋)", name: "목재", price: "2마일" },
+      { category: "재료(1셋)", name: "부드러운 목재", price: "1마일" },
+      { category: "재료(1셋)", name: "대나무 토막", price: "1마일" },
+      { category: "재료(1셋)", name: "돌", price: "1마일" },
+      { category: "재료(1셋)", name: "철광석", price: "2마일" },
+      { category: "재료(1셋)", name: "점토", price: "1마일" },
+      { category: "재료(1셋)", name: "금광석", price: "20마일" },
+      { category: "재료(1셋)", name: "별의 조각", price: "2마일" },
+      { category: "재료(1셋)", name: "커다란 별의 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "잡초", price: "1마일" },
+      { category: "재료(1셋)", name: "여름 조개껍데기", price: "2마일" },
+      { category: "재료(1셋)", name: "봄의 대나무", price: "5마일" },
+      { category: "재료(1셋)", name: "벚꽃잎", price: "5마일" },
+      { category: "재료(1셋)", name: "떡밥 100개", price: "20마일" },
+      
+      // ============ 가구 ============
+      { category: "가구", name: "보리밭", price: "1마일" },
+      
+      // ============ 레시피 ============
+      { category: "레시피", name: "금 잠자리채 레시피", price: "200마일" },
+      { category: "레시피", name: "금 삽 레시피", price: "200마일" },
+      { category: "레시피", name: "금 낚싯대 레시피", price: "200마일" },
+      { category: "레시피", name: "금 새총 레시피", price: "20마일" },
+      { category: "레시피", name: "부옥이 레시피", price: "10마일-20마일" },
+      { category: "레시피", name: "빛이끼&덩굴 레시피", price: "5마일-10마일" },
+      { category: "레시피", name: "머메이드 레시피", price: "10~20마일" },
+      { category: "레시피", name: "돈다발 레시피", price: "20~30마일" },
+      { category: "레시피", name: "목제 간이 창고 레시피", price: "10마일" },
+      { category: "레시피", name: "야광 벽 스티커 레시피", price: "20마일" },
+      { category: "레시피", name: "얼음 미니 눈사람 레시피", price: "120마일" },
+      { category: "레시피", name: "금 새총 레시피", price: "20마일" },
+      { category: "레시피", name: "금 잠자리채 레시피", price: "200마일" },
+      { category: "레시피", name: "금장미 리스 레시피", price: "20마일" },
+      { category: "레시피", name: "국화 화관 레시피", price: "10마일" },
+      { category: "레시피", name: "낮은 나무 울타리 레시피", price: "20마일" },
+      { category: "레시피", name: "넓은 버섯 레시피", price: "5마일" },
+      { category: "레시피", name: "달 레시피", price: "10마일" },
+      { category: "레시피", name: "돈다발 레시피", price: "20마일" },
+      { category: "레시피", name: "버섯 램프 레시피", price: "30마일" },
+      { category: "레시피", name: "벚꽃 미니백 레시피", price: "30마일" },
+      { category: "레시피", name: "야광 벽 스티커 레시피", price: "20마일" },
+      { category: "레시피", name: "얼음 미니 눈사람 레시피", price: "120마일" },
+      { category: "레시피", name: "얼음 테이블 레시피", price: "30마일" },
+      { category: "레시피", name: "유인용 오리 레시피", price: "2마일" },
+      { category: "레시피", name: "초록낙엽 레시피", price: "30마일" },
+      { category: "레시피", name: "큐트 장미 화관 레시피", price: "10마일" },
+      { category: "레시피", name: "큐트 튤립 리스 레시피", price: "10마일" },
+      { category: "레시피", name: "푸른 장미 화관 레시피", price: "20마일" },
+      { category: "레시피", name: "이스터 울타리 레시피", price: "5마일" },
+      
+      // ============ 올클 레시피 ============
+      { category: "올클 레시피", name: "벚꽃 레시피 (15종)", price: "400마일" },
+      { category: "올클 레시피", name: "여름 조개 레시피 (20종)", price: "400마일" },
+      { category: "올클 레시피", name: "머메이드 레시피 (15종)", price: "400마일" },
+      { category: "올클 레시피", name: "나무열매 레시피 (10종)", price: "400마일" },
+      { category: "올클 레시피", name: "버섯 레시피 (12종)", price: "400마일" },
+      { category: "올클 레시피", name: "단풍 레시피 (10종)", price: "400마일" },
+      { category: "올클 레시피", name: "얼음 레시피 (26종)", price: "1200마일" },
+      { category: "올클 레시피", name: "이스터 레시피 (20종)", price: "300마일" },
+      { category: "올클 레시피", name: "할로윈 레시피 (18종)", price: "300마일" },
+      { category: "올클 레시피", name: "부옥이 레시피 (12궁 포함, 49종)", price: "600마일" },
+      { category: "올클 레시피", name: "12궁 레시피 (부옥 제외)", price: "150마일" },
+      { category: "올클 레시피", name: "크리스마스 오너먼트 레시피 (20종)", price: "400마일" },
+      { category: "올클 레시피", name: "봄 대나무 레시피 (16종)", price: "400마일" },
+      { category: "올클 레시피", name: "금도구 레시피 (4종)", price: "620마일" },
+      { category: "올클 레시피", name: "꽃 리스 & 화환 레시피 (52종)", price: "650~700마일" },
+      
+      // ============ 올클 아이템 ============
+      { category: "올클 아이템", name: "감정 화석 (73종)", price: "80마일" },
+      { category: "올클 아이템", name: "미술품 (43종)", price: "400마일" },
+      { category: "올클 아이템", name: "토용 (36종, 마스터 포함)", price: "100마일" },
+      { category: "올클 아이템", name: "음악 (107종)", price: "300마일" },
+      { category: "올클 아이템", name: "NPC 액자 (62종)", price: "1600마일" },
+      
+      // ============ 인기 아이템 (이전 희귀 아이템) ============
+      { category: "인기 아이템", name: "스코틀랜드 모자", price: "20마일" },
+      { category: "인기 아이템", name: "복고양이", price: "20마일" },
+      { category: "인기 아이템", name: "5층탑", price: "30마일" },
+      { category: "인기 아이템", name: "해적통", price: "30마일" },
+      { category: "인기 아이템", name: "넘어진 해적통", price: "30마일" },
+      { category: "인기 아이템", name: "DAL MA-1", price: "30마일" },
+      { category: "인기 아이템", name: "DAL 비행기 모형", price: "50마일" },
+      { category: "인기 아이템", name: "생선건조대", price: "30마일" },
+      { category: "인기 아이템", name: "닻 장식", price: "10마일" },
+      { category: "인기 아이템", name: "멋진 아이스 박스", price: "10마일" },
+      { category: "인기 아이템", name: "개미집", price: "20마일" },
+      { category: "인기 아이템", name: "원목채집통", price: "10마일" },
+      { category: "인기 아이템", name: "낯선고양이 가방", price: "25마일" },
+      { category: "인기 아이템", name: "분리수거 종이 묶음", price: "30마일" },
+      { category: "인기 아이템", name: "위대한 조각", price: "60마일" },
+      
+      // ============ 완제품 (도구) ============
+      { category: "완제품", name: "금 낚싯대", price: "2마일" },
+      { category: "완제품", name: "금 삽", price: "2마일" },
+      { category: "완제품", name: "금 물뿌리개", price: "2마일" },
+      { category: "완제품", name: "금도끼", price: "2마일" },
+      { category: "완제품", name: "금새총", price: "2마일" },
+      
+      // ============ 만지작 ============
+      { category: "만지작", name: "신템 전색", price: "200마일" },
+      { category: "만지작", name: "신템 단색", price: "70마일" },
+      { category: "만지작", name: "구템 전색", price: "200마일" },
+      { category: "만지작", name: "구템 단색", price: "80마일" },
+      { category: "만지작", name: "신의류", price: "80~100마일" },
+      { category: "만지작", name: "구의류", price: "300마일" },
+      { category: "만지작", name: "비매품 전체", price: "400마일" },
+      
+      // ============ 알바 ============
+      { category: "알바", name: "꽃 뽑기 소량", price: "10~15마일" },
+      { category: "알바", name: "꽃 뽑기 대량", price: "30~40마일" },
+      { category: "알바", name: "꽃 옮기기 소량", price: "20~25마일" },
+      { category: "알바", name: "꽃 옮기기 대량", price: "30~40마일" },
+      { category: "알바", name: "잡초 뽑기 소량", price: "10~20마일" },
+      { category: "알바", name: "잡초 뽑기 대량", price: "20~30마일" },
+      { category: "알바", name: "잡초 심기 소량", price: "10~15마일" },
+      { category: "알바", name: "잡초 심기 대량", price: "30~40마일" },
+      { category: "알바", name: "나무 뽑기 소량", price: "10~20마일" },
+      { category: "알바", name: "나무 뽑기 대량", price: "30~40마일" },
+      { category: "알바", name: "나무 옮기기 소량", price: "20~30마일" },
+      { category: "알바", name: "나무 옮기기 대량", price: "30~40마일" },
+      { category: "알바", name: "카탈 알바 100개", price: "150~200마일" },
+      
+      // ============ 액자 ============
+      { category: "액자", name: "애플의 사진", price: "10마일" },
+      { category: "액자", name: "레온의 사진", price: "30마일" },
+      { category: "액자", name: "저스틴의 사진", price: "30마일" },
+      { category: "액자", name: "미애의 사진", price: "10마일" },
+      { category: "액자", name: "사브리나의 사진", price: "30마일" },
+      { category: "액자", name: "올리버의 사진", price: "30마일" },
+      { category: "액자", name: "마틸다의 사진", price: "30마일" },
+      
+      // ============ 조각 ============
+      { category: "조각", name: "아름다운 조각", price: "10마일" },
+      { category: "조각", name: "무사의 조각", price: "10마일" }
+    ];
+
+    // ====================== 검색 기능 ======================
+    function filterItems() {
+      const searchText = document.getElementById("search").value.toLowerCase().trim();
+      const tableBody = document.querySelector("#itemTable tbody");
+      if (!searchText) {
+        tableBody.innerHTML = `<tr><td colspan="4">검색 결과가 여기에 표시됩니다.</td></tr>`;
+        return;
+      }
+      let filtered = items.filter(item => item.name.toLowerCase().includes(searchText));
+      filtered = sortByName(filtered);
+      if (filtered.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="4">검색 결과가 없습니다.</td></tr>`;
+      } else {
+        tableBody.innerHTML = "";
+        filtered.forEach(item => {
+          tableBody.innerHTML += `
+            <tr>
+              <td>${item.category}</td>
+              <td>${item.name}</td>
+              <td>${item.price}</td>
+              <td>
+                <input type="number" min="1" value="1" class="quantity-input" id="qty-${item.name}">
+                <button onclick="addToCart('${item.name}','${item.price}','${item.category}')">추가</button>
+              </td>
+            </tr>
+          `;
+        });
+      }
+    }
+
+    // ====================== 카테고리 필터 ======================
+    function showCategory(catName) {
+      const tableBody = document.querySelector("#itemTable tbody");
+      document.getElementById("search").value = "";
+      let filtered = items.filter(item => item.category === catName);
+      filtered = sortByName(filtered);
+      if (filtered.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="4">${catName} 카테고리에 해당하는 아이템이 없습니다.</td></tr>`;
+      } else {
+        tableBody.innerHTML = "";
+        filtered.forEach(item => {
+          tableBody.innerHTML += `
+            <tr>
+              <td>${item.category}</td>
+              <td>${item.name}</td>
+              <td>${item.price}</td>
+              <td>
+                <input type="number" min="1" value="1" class="quantity-input" id="qty-${item.name}">
+                <button onclick="addToCart('${item.name}','${item.price}','${item.category}')">추가</button>
+              </td>
+            </tr>
+          `;
+        });
+      }
+      toggleMenu();
+    }
+
+    // ====================== 전체보기 ======================
+    function showAll() {
+      const tableBody = document.querySelector("#itemTable tbody");
+      document.getElementById("search").value = "";
+      let sortedAll = sortByName([...items]);
+      tableBody.innerHTML = "";
+      sortedAll.forEach(item => {
+        tableBody.innerHTML += `
+          <tr>
+            <td>${item.category}</td>
+            <td>${item.name}</td>
+            <td>${item.price}</td>
+            <td>
+              <input type="number" min="1" value="1" class="quantity-input" id="qty-${item.name}">
+              <button onclick="addToCart('${item.name}','${item.price}','${item.category}')">추가</button>
+            </td>
+          </tr>
+        `;
+      });
+      toggleMenu();
+    }
+
+    /********** 거래글(판매/구매) 및 로컬 스토리지 **********/
+    const modeMapping = {
+      "판매": "판매합니다",
+      "구매": "구매합니다",
+      "알바구인": "알바 구합니다",
+      "알바구직": "알바 합니다",
+      "개방": "개방합니다",
+      "개방요청": "개방요청드립니다"
+    };
+    let tradeMode = "판매"; 
+    let cart = [];
+
+    window.addEventListener("load", () => {
+      const savedCart = localStorage.getItem("myCart");
+      const savedMode = localStorage.getItem("myMode");
+      if (savedCart) {
+        cart = JSON.parse(savedCart);
+      }
+      if (savedMode) {
+        tradeMode = savedMode;
+        document.querySelectorAll('[name="tradeMode"]').forEach(radio => {
+          if (radio.value === tradeMode) radio.checked = true;
+        });
+      }
+      renderCart();
+    });
+
+    function setTradeMode(mode) {
+      tradeMode = mode;
+      localStorage.setItem("myMode", tradeMode);
+      renderCart();
+    }
+
+    // 아이템 추가: 동일 아이템이면 수량과 총 가격 합산 (재료는 '셋', 그 외는 '개')
+    function addToCart(itemName, itemPrice, itemCategory) {
+      const qtyInput = document.getElementById("qty-" + itemName);
+      let qtyVal = parseInt(qtyInput.value, 10) || 1;
+      let numericPrice = parseInt(itemPrice, 10) || 0;
+      
+      let existing = cart.find(item => item.name === itemName);
+      if (existing) {
+        existing.quantity += qtyVal;
+      } else {
+        cart.push({ name: itemName, price: numericPrice, quantity: qtyVal, category: itemCategory });
+      }
+      localStorage.setItem("myCart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeFromCart(itemName) {
+      cart = cart.filter(item => item.name !== itemName);
+      localStorage.setItem("myCart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function clearCart() {
+      cart = [];
+      localStorage.removeItem("myCart");
+      renderCart();
+    }
+
+    // 장바구니 출력: 각 아이템의 총 가격 및 단위 처리
+    function renderCart() {
+      const cartView = document.getElementById("cartView");
+      if (cart.length === 0) {
+        cartView.innerHTML = `<div class="cart-empty">현재 담긴 아이템이 없습니다.</div>`;
+        return;
+      }
+      let lines = cart.map(item => {
+        let unit = (item.category === "재료(1셋)") ? "셋" : "개";
+        let totalPrice = item.price * item.quantity;
+        return `${item.name} ${item.quantity}${unit} ${totalPrice}마일 <button class="item-delete-btn" onclick="removeFromCart('${item.name}')">삭제</button>`;
+      });
+      const resultText = lines.join(", ") + `<strong>${modeMapping[tradeMode]}</strong>`;
+      cartView.innerHTML = resultText;
+    }
+
+    // 복사하기: 장바구니 내용 복사 시, 삭제 버튼은 제외
+    function copyTradeText() {
+      const cartView = document.getElementById("cartView");
+      const clone = cartView.cloneNode(true);
+      const buttons = clone.getElementsByTagName("button");
+      while (buttons.length > 0) {
+        buttons[0].parentNode.removeChild(buttons[0]);
+      }
+      const text = clone.textContent;
+      if (!text || text.includes("현재 담긴 아이템이 없습니다")) {
+        alert("복사할 내용이 없습니다.");
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        alert("거래글이 복사되었습니다.");
+      }).catch(() => {
+        alert("복사에 실패했습니다.");
+      });
+    }
+
+    /********** 사용자 아이템 제출 (Firestore 연동) **********/
+    function submitUserItem() {
+      const category = document.getElementById("userCategory").value;
+      const name = document.getElementById("userItemName").value.trim();
+      const price = document.getElementById("userItemPrice").value.trim();
+      const island = document.getElementById("userIsland").value.trim();
+      const suggestion = document.getElementById("userSuggestion").value.trim();
+      const resultDiv = document.getElementById("userItemResult");
+
+      if (!name || !price || !island) {
+        resultDiv.style.color = "red";
+        resultDiv.textContent = "카테고리, 아이템 이름, 시세, 그리고 섬/주대 이름은 필수 입력사항입니다.";
+        return;
+      }
+
+      // Firestore의 "userItems" 컬렉션에 문서 추가
+      db.collection("userItems").add({
+        category: category,
+        name: name,
+        price: price,
+        island: island,
+        suggestion: suggestion,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        resultDiv.style.color = "green";
+        resultDiv.textContent = "아이템이 제출되었습니다.";
+        document.getElementById("userItemName").value = "";
+        document.getElementById("userItemPrice").value = "";
+        document.getElementById("userIsland").value = "";
+        document.getElementById("userSuggestion").value = "";
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error);
+        resultDiv.style.color = "red";
+        resultDiv.textContent = "제출 중 오류가 발생했습니다.";
+      });
+    }
+  </script>
+</body>
+</html>
