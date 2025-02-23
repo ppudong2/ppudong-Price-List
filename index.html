@@ -60,7 +60,7 @@
     .search-box input::placeholder {
       color: #4caf50;
     }
-    /* placeholder 문구를 "아이템 이름"으로 변경 (기존 "아이템 이름 > 정확한 아이템 이름"에서 간단하게) */
+    /* placeholder 문구를 "아이템 이름"으로 변경 */
     .search-button {
       background: none;
       border: none;
@@ -124,17 +124,19 @@
       border: 1px solid #ddd;
       padding: 8px;
       text-align: center;
+      font-style: normal;
+      color: #000;
     }
     th {
       background-color: #4caf50;
       color: white;
     }
-    /* 테이블 초기 메시지 */
+    /* 테이블 초기 메시지 (페이지 로드시 아무 아이템도 보이지 않음) */
     #itemTable tbody tr td {
-      font-style: italic;
-      color: #666;
+      font-style: normal;
+      color: #000;
     }
-    /* 사용자 아이템 제출 섹션 */
+    /* 사용자 제출 아이템 섹션 (일반 사용자용: Firestore에만 저장됨) */
     .user-submit-section {
       margin: 20px auto;
       max-width: 800px;
@@ -144,7 +146,7 @@
       padding: 15px;
     }
     .user-submit-section h2 {
-      color: #4caf50;
+      color: #808080;
       margin-top: 0;
     }
     .user-submit-guide {
@@ -160,17 +162,24 @@
       flex-wrap: wrap;
       margin-bottom: 10px;
     }
-    .user-item-inputs input#userItemName {
+    .user-item-inputs select,
+    .user-item-inputs input {
+      padding: 8px;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+    .user-item-inputs input#submissionItemName {
       width: 150px;
     }
-    .user-item-inputs input#userItemPrice {
+    .user-item-inputs input#submissionItemPrice {
       width: 100px;
     }
-    .user-item-inputs input#userPassword {
+    .user-item-inputs input#submissionIsland {
       width: 150px;
     }
-    /* 사용자 건의사항 제출 섹션 */
-    .suggestion-section {
+    /* 관리자용 아이템 제출 섹션 (홈페이지에 바로 반영됨) */
+    .admin-submit-section {
       margin: 20px auto;
       max-width: 800px;
       background: #fff;
@@ -178,30 +187,38 @@
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
       padding: 15px;
     }
-    .suggestion-section h2 {
-      color: #4caf50;
+    .admin-submit-section h2 {
+      color: #b33c3c; /* 톤다운된 레드 */
       margin-top: 0;
     }
-    .suggestion-section textarea {
-      width: 80%;
-      height: 60px;
+    .admin-submit-guide {
+      font-size: 0.9em;
+      color: #808080;
+      margin: 5px 0 10px;
+    }
+    .admin-item-inputs {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .admin-item-inputs select,
+    .admin-item-inputs input {
       padding: 8px;
       border: 2px solid #4caf50;
       border-radius: 5px;
       font-size: 0.9em;
-      resize: vertical;
     }
-    .suggestion-section button {
-      padding: 8px 12px;
-      margin: 5px;
-      border: 2px solid #4caf50;
-      background-color: #f8f3c8;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 0.9em;
+    .admin-item-inputs input#userItemName {
+      width: 150px;
     }
-    .suggestion-section button:hover {
-      background-color: #e0dab0;
+    .admin-item-inputs input#userItemPrice {
+      width: 100px;
+    }
+    .admin-item-inputs input#userPassword {
+      width: 150px;
     }
     /* Footer 스타일 */
     footer {
@@ -223,9 +240,6 @@
   <!-- Firebase SDK (compat 버전) 추가 -->
   <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore-compat.js"></script>
-  <!-- Analytics 사용 시 (필요하면 활성화)
-  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics-compat.js"></script>
-  -->
   <!-- Firebase 초기화 및 설정 -->
   <script>
     const firebaseConfig = {
@@ -289,16 +303,48 @@
         </tr>
       </thead>
       <tbody>
+        <!-- 초기에는 검색 결과 메시지만 보임 -->
         <tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>
       </tbody>
     </table>
   </div>
 
-  <!-- 사용자 아이템 제출 섹션 (Firestore 연동) -->
+  <!-- 사용자용 아이템 제출 섹션 (Firestore에만 저장됨, 홈페이지에 바로 반영되지 않음) -->
   <div class="user-submit-section">
-    <h2>아이템 추가 &lt;관리자용&gt;</h2>
+    <h2>아이템 제출 (일반 사용자용)</h2>
     <p class="user-submit-guide">※ 시세표에 등록되지 않은 아이템이나 수정 요청이 있다면 자유롭게 제출해 주세요!</p>
     <div class="user-item-inputs">
+      <select id="submissionCategory">
+        <option value="재료(1셋)">재료(1셋)</option>
+        <option value="가구">가구</option>
+        <option value="레시피">레시피</option>
+        <option value="옷/신발/악세서리">옷/신발/악세서리</option>
+        <option value="인기 아이템">인기 아이템</option>
+        <option value="올클 레시피">올클 레시피</option>
+        <option value="올클 아이템">올클 아이템</option>
+        <option value="완제품">완제품</option>
+        <option value="만지작">만지작</option>
+        <option value="알바">알바</option>
+        <option value="액자">액자</option>
+        <option value="조각">조각</option>
+      </select>
+      <input type="text" id="submissionItemName" placeholder="정확한 아이템 이름">
+      <input type="text" id="submissionItemPrice" placeholder="시세 (예: 10마일)">
+      <input type="text" id="submissionIsland" placeholder="섬/주대 이름">
+    </div>
+    <div>
+      <button onclick="submitSubmission()">보내기</button>
+    </div>
+    <div id="submissionResult"></div>
+  </div>
+
+  <!-- 관리자용 아이템 제출 섹션 (데이터가 즉시 홈페이지에 반영됨) -->
+  <div class="admin-submit-section">
+    <h2>아이템 추가 &lt;관리자용&gt;</h2>
+    <p class="admin-submit-guide">※ 등록 또는 수정 요청을 위해 아이템을 제출합니다.<br>
+      (추가 시 시세 입력, 삭제 시 시세 입력란은 비워두고 삭제용 비밀번호 입력)
+    </p>
+    <div class="admin-item-inputs">
       <select id="userCategory">
         <option value="재료(1셋)">재료(1셋)</option>
         <option value="가구">가구</option>
@@ -315,23 +361,13 @@
       </select>
       <input type="text" id="userItemName" placeholder="정확한 아이템 이름">
       <input type="text" id="userItemPrice" placeholder="시세 (예: 10마일)">
-      <!-- 섬/주대 입력 대신 비밀번호 입력 -->
+      <!-- 관리자용은 비밀번호 입력 (추가 시: 0998star, 삭제 시: 0998dstar) -->
       <input type="password" id="userPassword" placeholder="비밀번호">
     </div>
     <div>
       <button onclick="submitUserItem()">보내기</button>
     </div>
     <div id="userItemResult"></div>
-  </div>
-
-  <!-- 사용자 건의사항 제출 섹션 -->
-  <div class="suggestion-section">
-    <h2>건의사항 제출</h2>
-    <textarea id="userSuggestion" placeholder="오타, 시세 오류 등 수정 요청을 입력해 주세요."></textarea>
-    <div>
-      <button onclick="submitSuggestion()">보내기</button>
-    </div>
-    <div id="suggestionResult"></div>
   </div>
 
   <!-- Footer -->
@@ -350,23 +386,163 @@
       return arr.sort((a, b) => a.name.localeCompare(b.name));
     }
     
-    // 미리 작성된 정적 아이템들(전체 데이터; 누락되지 않도록 전부 포함)
+    // staticItems: 기존 모든 정적 아이템 데이터 – (여기에 전체 데이터를 누락 없이 넣으세요)
     const staticItems = [
-      // (여기에 앞서 제공된 전체 staticItems 배열을 복사하여 넣으세요)
+      // 재료(1셋)
       { category: "재료(1셋)", name: "자패", price: "1마일" },
       { category: "재료(1셋)", name: "산호", price: "1마일" },
       { category: "재료(1셋)", name: "방석고둥", price: "1마일" },
       { category: "재료(1셋)", name: "거거", price: "2마일" },
       { category: "재료(1셋)", name: "연잎성게", price: "1마일" },
-      // ... 나머지 staticItems 데이터 계속...
+      { category: "재료(1셋)", name: "뮤렉스조개", price: "1마일" },
+      { category: "재료(1셋)", name: "바지락", price: "1마일" },
+      { category: "재료(1셋)", name: "소라고둥", price: "1마일" },
+      { category: "재료(1셋)", name: "녹슨 부품", price: "5마일" },
+      { category: "재료(1셋)", name: "벌집", price: "2마일" },
+      { category: "재료(1셋)", name: "염소자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "물병자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "물고기자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "양자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "황소자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "쌍둥이자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "게자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "사자자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "처녀자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "천칭자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "전갈자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "사수자리 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "사탕", price: "30마일" },
+      { category: "재료(1셋)", name: "롤리팝", price: "40마일" },
+      { category: "재료(1셋)", name: "나뭇가지", price: "1마일" },
+      { category: "재료(1셋)", name: "단단한 목재", price: "1마일" },
+      { category: "재료(1셋)", name: "목재", price: "2마일" },
+      { category: "재료(1셋)", name: "부드러운 목재", price: "1마일" },
+      { category: "재료(1셋)", name: "대나무 토막", price: "1마일" },
+      { category: "재료(1셋)", name: "돌", price: "1마일" },
+      { category: "재료(1셋)", name: "철광석", price: "2마일" },
+      { category: "재료(1셋)", name: "점토", price: "1마일" },
+      { category: "재료(1셋)", name: "금광석", price: "20마일" },
+      { category: "재료(1셋)", name: "별의 조각", price: "2마일" },
+      { category: "재료(1셋)", name: "커다란 별의 조각", price: "20마일" },
+      { category: "재료(1셋)", name: "잡초", price: "1마일" },
+      { category: "재료(1셋)", name: "여름 조개껍데기", price: "2마일" },
+      { category: "재료(1셋)", name: "봄의 대나무", price: "5마일" },
+      { category: "재료(1셋)", name: "벚꽃잎", price: "5마일" },
+      { category: "재료(1셋)", name: "떡밥 100개", price: "20마일" },
+      // 가구
+      { category: "가구", name: "보리밭", price: "1마일" },
+      // 레시피
+      { category: "레시피", name: "금 잠자리채 레시피", price: "200마일" },
+      { category: "레시피", name: "금 삽 레시피", price: "200마일" },
+      { category: "레시피", name: "금 낚싯대 레시피", price: "200마일" },
+      { category: "레시피", name: "금 새총 레시피", price: "20마일" },
+      { category: "레시피", name: "부옥이 레시피", price: "10마일-20마일" },
+      { category: "레시피", name: "빛이끼&덩굴 레시피", price: "5마일-10마일" },
+      { category: "레시피", name: "머메이드 레시피", price: "10~20마일" },
+      { category: "레시피", name: "돈다발 레시피", price: "20~30마일" },
+      { category: "레시피", name: "목제 간이 창고 레시피", price: "10마일" },
+      { category: "레시피", name: "야광 벽 스티커 레시피", price: "20마일" },
+      { category: "레시피", name: "얼음 미니 눈사람 레시피", price: "120마일" },
+      { category: "레시피", name: "금 새총 레시피", price: "20마일" },
+      { category: "레시피", name: "금 잠자리채 레시피", price: "200마일" },
+      { category: "레시피", name: "금장미 리스 레시피", price: "20마일" },
+      { category: "레시피", name: "국화 화관 레시피", price: "10마일" },
+      { category: "레시피", name: "낮은 나무 울타리 레시피", price: "20마일" },
+      { category: "레시피", name: "넓은 버섯 레시피", price: "5마일" },
+      { category: "레시피", name: "달 레시피", price: "10마일" },
+      { category: "레시피", name: "돈다발 레시피", price: "20마일" },
+      { category: "레시피", name: "버섯 램프 레시피", price: "30마일" },
+      { category: "레시피", name: "벚꽃 미니백 레시피", price: "30마일" },
+      { category: "레시피", name: "야광 벽 스티커 레시피", price: "20마일" },
+      { category: "레시피", name: "얼음 미니 눈사람 레시피", price: "120마일" },
+      { category: "레시피", name: "얼음 테이블 레시피", price: "30마일" },
+      { category: "레시피", name: "유인용 오리 레시피", price: "2마일" },
+      { category: "레시피", name: "초록낙엽 레시피", price: "30마일" },
+      { category: "레시피", name: "큐트 장미 화관 레시피", price: "10마일" },
+      { category: "레시피", name: "큐트 튤립 리스 레시피", price: "10마일" },
+      { category: "레시피", name: "푸른 장미 화관 레시피", price: "20마일" },
+      { category: "레시피", name: "이스터 울타리 레시피", price: "5마일" },
+      // 올클 레시피
+      { category: "올클 레시피", name: "벚꽃 레시피 (15종)", price: "400마일" },
+      { category: "올클 레시피", name: "여름 조개 레시피 (20종)", price: "400마일" },
+      { category: "올클 레시피", name: "머메이드 레시피 (15종)", price: "400마일" },
+      { category: "올클 레시피", name: "나무열매 레시피 (10종)", price: "400마일" },
+      { category: "올클 레시피", name: "버섯 레시피 (12종)", price: "400마일" },
+      { category: "올클 레시피", name: "단풍 레시피 (10종)", price: "400마일" },
+      { category: "올클 레시피", name: "얼음 레시피 (26종)", price: "1200마일" },
+      { category: "올클 레시피", name: "이스터 레시피 (20종)", price: "300마일" },
+      { category: "올클 레시피", name: "할로윈 레시피 (18종)", price: "300마일" },
+      { category: "올클 레시피", name: "부옥이 레시피 (12궁 포함, 49종)", price: "600마일" },
+      { category: "올클 레시피", name: "12궁 레시피 (부옥 제외)", price: "150마일" },
+      { category: "올클 레시피", name: "크리스마스 오너먼트 레시피 (20종)", price: "400마일" },
+      { category: "올클 레시피", name: "봄 대나무 레시피 (16종)", price: "400마일" },
+      { category: "올클 레시피", name: "금도구 레시피 (4종)", price: "620마일" },
+      { category: "올클 레시피", name: "꽃 리스 & 화환 레시피 (52종)", price: "650~700마일" },
+      // 올클 아이템
+      { category: "올클 아이템", name: "감정 화석 (73종)", price: "80마일" },
+      { category: "올클 아이템", name: "미술품 (43종)", price: "400마일" },
+      { category: "올클 아이템", name: "토용 (36종, 마스터 포함)", price: "100마일" },
+      { category: "올클 아이템", name: "음악 (107종)", price: "300마일" },
+      { category: "올클 아이템", name: "NPC 액자 (62종)", price: "1600마일" },
+      // 인기 아이템 (이전 희귀 아이템)
+      { category: "인기 아이템", name: "스코틀랜드 모자", price: "20마일" },
+      { category: "인기 아이템", name: "복고양이", price: "20마일" },
+      { category: "인기 아이템", name: "5층탑", price: "30마일" },
+      { category: "인기 아이템", name: "해적통", price: "30마일" },
+      { category: "인기 아이템", name: "넘어진 해적통", price: "30마일" },
+      { category: "인기 아이템", name: "DAL MA-1", price: "30마일" },
+      { category: "인기 아이템", name: "DAL 비행기 모형", price: "50마일" },
+      { category: "인기 아이템", name: "생선건조대", price: "30마일" },
+      { category: "인기 아이템", name: "닻 장식", price: "10마일" },
+      { category: "인기 아이템", name: "멋진 아이스 박스", price: "10마일" },
+      { category: "인기 아이템", name: "개미집", price: "20마일" },
+      { category: "인기 아이템", name: "원목채집통", price: "10마일" },
+      { category: "인기 아이템", name: "낯선고양이 가방", price: "25마일" },
+      { category: "인기 아이템", name: "분리수거 종이 묶음", price: "30마일" },
+      { category: "인기 아이템", name: "위대한 조각", price: "60마일" },
+      // 완제품 (도구)
+      { category: "완제품", name: "금 낚싯대", price: "2마일" },
+      { category: "완제품", name: "금 삽", price: "2마일" },
+      { category: "완제품", name: "금 물뿌리개", price: "2마일" },
+      { category: "완제품", name: "금도끼", price: "2마일" },
+      { category: "완제품", name: "금새총", price: "2마일" },
+      // 만지작
+      { category: "만지작", name: "신템 전색", price: "200마일" },
+      { category: "만지작", name: "신템 단색", price: "70마일" },
+      { category: "만지작", name: "구템 전색", price: "200마일" },
+      { category: "만지작", name: "구템 단색", price: "80마일" },
+      { category: "만지작", name: "신의류", price: "80~100마일" },
+      { category: "만지작", name: "구의류", price: "300마일" },
+      { category: "만지작", name: "비매품 전체", price: "400마일" },
+      // 알바
+      { category: "알바", name: "꽃 뽑기 소량", price: "10~15마일" },
+      { category: "알바", name: "꽃 뽑기 대량", price: "30~40마일" },
+      { category: "알바", name: "꽃 옮기기 소량", price: "20~25마일" },
+      { category: "알바", name: "꽃 옮기기 대량", price: "30~40마일" },
+      { category: "알바", name: "잡초 뽑기 소량", price: "10~20마일" },
+      { category: "알바", name: "잡초 뽑기 대량", price: "20~30마일" },
+      { category: "알바", name: "잡초 심기 소량", price: "10~15마일" },
+      { category: "알바", name: "잡초 심기 대량", price: "30~40마일" },
+      { category: "알바", name: "나무 뽑기 소량", price: "10~20마일" },
+      { category: "알바", name: "나무 뽑기 대량", price: "30~40마일" },
+      { category: "알바", name: "나무 옮기기 소량", price: "20~30마일" },
+      { category: "알바", name: "나무 옮기기 대량", price: "30~40마일" },
+      { category: "알바", name: "카탈 알바 100개", price: "150~200마일" },
+      // 액자
+      { category: "액자", name: "애플의 사진", price: "10마일" },
+      { category: "액자", name: "레온의 사진", price: "30마일" },
+      { category: "액자", name: "저스틴의 사진", price: "30마일" },
+      { category: "액자", name: "미애의 사진", price: "10마일" },
+      { category: "액자", name: "사브리나의 사진", price: "30마일" },
+      { category: "액자", name: "올리버의 사진", price: "30마일" },
+      { category: "액자", name: "마틸다의 사진", price: "30마일" },
+      // 조각
       { category: "조각", name: "아름다운 조각", price: "10마일" },
       { category: "조각", name: "무사의 조각", price: "10마일" }
     ];
     
-    // Firestore에서 사용자 제출 아이템을 실시간으로 불러오기 위한 변수
+    // Firestore "userItems" 컬렉션의 데이터를 실시간 구독하여 관리자 제출 데이터(userItems)에 추가
     let userItems = [];
-    
-    // Firestore "userItems" 컬렉션 실시간 구독 (onSnapshot)
     db.collection("userItems")
       .orderBy("createdAt", "asc")
       .onSnapshot(snapshot => {
@@ -374,13 +550,13 @@
         snapshot.forEach(doc => {
           userItems.push(doc.data());
         });
-        // 만약 검색창에 텍스트가 있으면 결과 업데이트, 아니면 기본 메시지를 유지
-        if(document.getElementById("search").value.trim()){
+        // 업데이트는 검색 시나 카테고리 필터 시에만 반영 (초기에는 아무것도 표시하지 않음)
+        if(document.getElementById("search").value.trim() !== ""){
           displayItems([...staticItems, ...userItems]);
         }
       });
     
-    // 시세표에 아이템들을 표시하는 함수
+    // 시세표에 아이템들을 표시하는 함수 (staticItems + 관리자 제출 데이터)
     function displayItems(itemsArray) {
       const tableBody = document.querySelector("#itemTable tbody");
       if (itemsArray.length === 0) {
@@ -409,7 +585,9 @@
         tableBody.innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
         return;
       }
-      let filtered = [...staticItems, ...userItems].filter(item => item.name.toLowerCase().includes(searchText));
+      let filtered = [...staticItems, ...userItems].filter(item => 
+        item.name.toLowerCase().includes(searchText)
+      );
       filtered = sortByName(filtered);
       if (filtered.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="3">검색 결과가 없습니다.</td></tr>`;
@@ -459,8 +637,9 @@
       toggleMenu();
     }
     
-    /********** 사용자 아이템 제출 (Firestore 연동) **********/
-    const ADMIN_PASSWORD = "0998star";
+    /********** 관리자용 아이템 제출 (즉시 홈페이지 반영) **********/
+    const ADD_PASSWORD = "0998star";
+    const DELETE_PASSWORD = "0998dstar";
     function submitUserItem() {
       const category = document.getElementById("userCategory").value;
       const name = document.getElementById("userItemName").value.trim();
@@ -468,59 +647,106 @@
       const password = document.getElementById("userPassword").value.trim();
       const resultDiv = document.getElementById("userItemResult");
 
-      if (!name || !price || !password) {
+      if (!name || !password) {
         resultDiv.style.color = "red";
-        resultDiv.textContent = "카테고리, 아이템 이름, 시세, 그리고 비밀번호는 필수 입력사항입니다.";
+        resultDiv.textContent = "카테고리, 아이템 이름, 그리고 비밀번호는 필수 입력사항입니다.";
         return;
       }
-      if (password !== ADMIN_PASSWORD) {
+      
+      // 추가 모드: 시세 입력란에 값이 있는 경우 → 추가
+      if (price) {
+        if (password !== ADD_PASSWORD) {
+          resultDiv.style.color = "red";
+          resultDiv.textContent = "추가를 위한 비밀번호가 올바르지 않습니다.";
+          return;
+        }
+        db.collection("userItems").add({
+          category: category,
+          name: name,
+          price: price,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+          resultDiv.style.color = "green";
+          resultDiv.textContent = "아이템이 추가되었습니다.";
+          document.getElementById("userItemName").value = "";
+          document.getElementById("userItemPrice").value = "";
+          document.getElementById("userPassword").value = "";
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+          resultDiv.style.color = "red";
+          resultDiv.textContent = "추가 중 오류가 발생했습니다.";
+        });
+      }
+      // 삭제 모드: 시세 입력란이 비어있으면 → 삭제
+      else {
+        if (password !== DELETE_PASSWORD) {
+          resultDiv.style.color = "red";
+          resultDiv.textContent = "삭제를 위한 비밀번호가 올바르지 않습니다.";
+          return;
+        }
+        db.collection("userItems")
+          .where("category", "==", category)
+          .where("name", "==", name)
+          .get()
+          .then(querySnapshot => {
+            if (querySnapshot.empty) {
+              resultDiv.style.color = "red";
+              resultDiv.textContent = "삭제할 아이템을 찾을 수 없습니다.";
+              return;
+            }
+            let batch = db.batch();
+            querySnapshot.forEach(doc => {
+              batch.delete(doc.ref);
+            });
+            return batch.commit();
+          })
+          .then(() => {
+            resultDiv.style.color = "green";
+            resultDiv.textContent = "아이템이 삭제되었습니다.";
+            document.getElementById("userItemName").value = "";
+            document.getElementById("userItemPrice").value = "";
+            document.getElementById("userPassword").value = "";
+          })
+          .catch((error) => {
+            console.error("Error deleting document: ", error);
+            resultDiv.style.color = "red";
+            resultDiv.textContent = "삭제 중 오류가 발생했습니다.";
+          });
+      }
+    }
+    
+    /********** 사용자 제출 아이템 (Firestore 연동, 홈페이지에 바로 반영되지 않음) **********/
+    function submitSubmission() {
+      const category = document.getElementById("submissionCategory").value;
+      const name = document.getElementById("submissionItemName").value.trim();
+      const price = document.getElementById("submissionItemPrice").value.trim();
+      const island = document.getElementById("submissionIsland").value.trim();
+      const resultDiv = document.getElementById("submissionResult");
+
+      if (!name || !price || !island) {
         resultDiv.style.color = "red";
-        resultDiv.textContent = "비밀번호가 올바르지 않습니다.";
+        resultDiv.textContent = "카테고리, 정확한 아이템 이름, 시세, 그리고 섬/주대 이름은 필수 입력사항입니다.";
         return;
       }
 
-      db.collection("userItems").add({
+      db.collection("userSubmissions").add({
         category: category,
         name: name,
         price: price,
+        island: island,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       })
       .then(() => {
         resultDiv.style.color = "green";
-        resultDiv.textContent = "아이템이 제출되었습니다.";
-        document.getElementById("userItemName").value = "";
-        document.getElementById("userItemPrice").value = "";
-        document.getElementById("userPassword").value = "";
+        resultDiv.textContent = "아이템 제출이 완료되었습니다.";
+        document.getElementById("submissionItemName").value = "";
+        document.getElementById("submissionItemPrice").value = "";
+        document.getElementById("submissionIsland").value = "";
       })
       .catch((error) => {
-        console.error("Error adding document: ", error);
-        resultDiv.style.color = "red";
-        resultDiv.textContent = "제출 중 오류가 발생했습니다.";
-      });
-    }
-    
-    /********** 사용자 건의사항 제출 (Firestore 연동) **********/
-    function submitSuggestion() {
-      const suggestion = document.getElementById("userSuggestion").value.trim();
-      const resultDiv = document.getElementById("suggestionResult");
-
-      if (!suggestion) {
-        resultDiv.style.color = "red";
-        resultDiv.textContent = "건의사항을 입력해 주세요.";
-        return;
-      }
-
-      db.collection("suggestions").add({
-        suggestion: suggestion,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      .then(() => {
-        resultDiv.style.color = "green";
-        resultDiv.textContent = "건의사항이 제출되었습니다.";
-        document.getElementById("userSuggestion").value = "";
-      })
-      .catch((error) => {
-        console.error("Error adding suggestion: ", error);
+        console.error("Error adding submission: ", error);
         resultDiv.style.color = "red";
         resultDiv.textContent = "제출 중 오류가 발생했습니다.";
       });
