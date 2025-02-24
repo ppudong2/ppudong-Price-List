@@ -156,7 +156,7 @@
       border: 2px dashed #4caf50;
       padding: 10px;
       margin: 10px 0;  
-      font-size: 0.8em; /* 글씨 크기 감소 */
+      font-size: 0.7em; /* 글씨 크기 감소 */
       color: #006400; /* 진한 초록색 */
       line-height: 1.4;
     }
@@ -310,6 +310,7 @@
         <li><button onclick="showCategory('알바')">알바</button></li>
         <li><button onclick="showCategory('액자')">액자</button></li>
         <li><button onclick="showCategory('조각')">조각</button></li>
+        <li><button onclick="showCategory('토용')">토용</button></li>
         <li><button onclick="showAll()">전체보기</button></li>
       </ul>
     </div>
@@ -336,7 +337,7 @@
       ※시세표에 등록되지 않은 아이템을 가장 많이 제출해주신 분께<br>
       1등 – 1000마일, 2등 – 400마일, 3등 – 100마일을 선물로 드립니다!<br>
       매월 1일 추첨 진행하며 당첨글은 아래 링크에서 확인 가능합니다.<br>
-      Kakao: <a href="https://open.kakao.com/o/sy7awdXf">뿌동이포스트</a> | Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">@ppudong2</a>
+      Kakao: <a href="https://open.kakao.com/o/sCWfT4eh">뿌동이포스트</a> | Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">@ppudong2</a>
     </p>
     <div class="user-item-inputs">
       <select id="submissionCategory">
@@ -345,11 +346,8 @@
         <option value="레시피">레시피</option>
         <option value="옷/신발/악세서리">옷/신발/악세서리</option>
         <option value="인기 아이템">인기 아이템</option>
-        <option value="올클 레시피">올클 레시피</option>
-        <option value="올클 아이템">올클 아이템</option>
         <option value="완제품">완제품</option>
         <option value="만지작">만지작</option>
-        <option value="알바">알바</option>
         <option value="액자">액자</option>
         <option value="조각">조각</option>
       </select>
@@ -383,6 +381,7 @@
         <option value="알바">알바</option>
         <option value="액자">액자</option>
         <option value="조각">조각</option>
+        <option value="액자">토용</option>
       </select>
       <input type="text" id="userItemName" placeholder="아이템 이름">
       <input type="text" id="userItemPrice" placeholder="시세">
@@ -560,6 +559,43 @@
       // 조각
       { category: "조각", name: "아름다운 조각", price: "10마일" },
       { category: "조각", name: "무사의 조각", price: "10마일" }
+      // ============ 토용 ============
+      { category: "토용", name: "가면 토용", price: "1마일" },
+      { category: "토용", name: "가시 토용", price: "1마일" },
+      { category: "토용", name: "꿀꿀 토용", price: "1마일" },
+      { category: "토용", name: "끼익 토용", price: "1마일" },
+      { category: "토용", name: "둠칫 토용", price: "1마일" },
+      { category: "토용", name: "둥둥 토용", price: "1마일" },
+      { category: "토용", name: "디링 토용", price: "1마일" },
+      { category: "토용", name: "딩동 토용", price: "1마일" },
+      { category: "토용", name: "딸깍 토용", price: "1마일" },
+      { category: "토용", name: "땡그랑 토용", price: "1마일" },
+      { category: "토용", name: "또록 토용", price: "1마일" },
+      { category: "토용", name: "똑딱 토용", price: "1마일" },
+      { category: "토용", name: "뚱땅 토용", price: "1마일" },
+      { category: "토용", name: "띠롱 토용", price: "1마일" },
+      { category: "토용", name: "마스터 토용", price: "60마일" },
+      { category: "토용", name: "멍멍 토용", price: "1마일" },
+      { category: "토용", name: "방울 토용", price: "1마일" },
+      { category: "토용", name: "베이비 토용", price: "1마일" },
+      { category: "토용", name: "베이스 토용", price: "1마일" },
+      { category: "토용", name: "벨 토용", price: "1마일" },
+      { category: "토용", name: "뵤옹 토용", price: "1마일" },
+      { category: "토용", name: "부웅 토용", price: "1마일" },
+      { category: "토용", name: "뽀삐 토용", price: "1마일" },
+      { category: "토용", name: "뽁 토용", price: "1마일" },
+      { category: "토용", name: "뿌우 토용", price: "1마일" },
+      { category: "토용", name: "삐뽀 토용", price: "1마일" },
+      { category: "토용", name: "삐융 토용", price: "1마일" },
+      { category: "토용", name: "쉐킷 토용", price: "1마일" },
+      { category: "토용", name: "양철 토용", price: "1마일" },
+      { category: "토용", name: "에코 토용", price: "1마일" },
+      { category: "토용", name: "우와와 토용", price: "1마일" },
+      { category: "토용", name: "지직 토용", price: "1마일" },
+      { category: "토용", name: "콰삭 토용", price: "1마일" },
+      { category: "토용", name: "툭툭 토용", price: "1마일" },
+      { category: "토용", name: "푸르르 토용", price: "1마일" },
+      { category: "토용", name: "후후 토용", price: "1마일" },
     ];
     
     // Firestore "userItems" 컬렉션의 데이터를 실시간 구독하여 관리자 제출 데이터(userItems)를 업데이트
