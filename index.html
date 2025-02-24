@@ -34,8 +34,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 10px; /* 간격 축소 */
-      margin-left: 20px; /* 검색창을 오른쪽으로 이동 */
+      margin-bottom: 10px;
+      margin-left: 20px;
     }
     .search-box .hamburger {
       margin-right: 10px;
@@ -78,7 +78,7 @@
       border: 2px solid #4caf50;
       border-radius: 5px;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-      width: 160px;
+      width: 300px;
       padding: 10px;
       display: none;
       z-index: 999;
@@ -87,21 +87,28 @@
       display: block;
     }
     .menu ul {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
       list-style: none;
       margin: 0;
       padding: 0;
     }
     .menu li {
-      margin: 10px 0;
+      display: flex;
+      justify-content: center;
     }
     .menu button {
-      width: 100%;
+      width: 140px;
+      height: 40px;
       background: #f8f3c8;
       border: 2px solid #4caf50;
       border-radius: 5px;
-      padding: 6px;
       cursor: pointer;
       font-size: 0.9em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .menu button:hover {
       background: #e0dab0;
@@ -111,14 +118,14 @@
       padding: 20px;
       border-radius: 15px;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-      max-width: 800px;
+      max-width: 600px;
       margin: auto;
       position: relative;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px; /* 간격 축소 */
+      margin-top: 10px;
     }
     th, td {
       border: 1px solid #ddd;
@@ -131,15 +138,27 @@
       background-color: #4caf50;
       color: white;
     }
-    /* 테이블 초기 메시지 */
     #itemTable tbody tr td {
       font-style: normal;
       color: #000;
     }
+    /* 페이지네이션 컨트롤 */
+    #paginationControls button {
+      padding: 5px 10px;
+      margin: 0 5px;
+      border: 2px solid #4caf50;
+      background: #f8f3c8;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #paginationControls span {
+      font-size: 1em;
+      margin: 0 5px;
+    }
     /* 사용자용 아이템 제출 섹션 */
     .user-submit-section {
       margin: 20px auto;
-      max-width: 800px;
+      max-width: 600px;
       background: #fff;
       border-radius: 15px;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
@@ -150,21 +169,19 @@
       margin-top: 0;
       margin-bottom: 5px;
     }
-    /* 이벤트 배너 */
     .contest-announcement {
       background-color: #fffbe6;
       border: 2px dashed #4caf50;
       padding: 10px;
       margin: 10px 0;  
-      font-size: 0.7em; /* 글씨 크기 감소 */
-      color: #006400; /* 진한 초록색 */
+      font-size: 0.7em;
+      color: #006400;
       line-height: 1.4;
     }
     .contest-announcement a {
-      color: #804000; /* 초록+레드 섞인 색상 */
+      color: #804000;
       text-decoration: underline;
     }
-    /* 입력칸들 - 사용자 제출 */
     .user-item-inputs {
       display: flex;
       justify-content: center;
@@ -181,7 +198,7 @@
       font-size: 0.9em;
     }
     .user-item-inputs select {
-      margin-top: 5px; /* 카테고리 선택창 살짝 아래 */
+      margin-top: 5px;
     }
     .user-item-inputs input#submissionItemName {
       width: 150px;
@@ -195,7 +212,7 @@
     /* 관리자용 아이템 제출 섹션 */
     .admin-submit-section {
       margin: 20px auto;
-      max-width: 800px;
+      max-width: 600px;
       background: #fff;
       border-radius: 15px;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
@@ -204,12 +221,12 @@
     .admin-submit-section h2 {
       color: #b33c3c;
       margin-top: 0;
-      margin-bottom: 5px;  /* 제목과 안내문 간격 축소 */
+      margin-bottom: 5px;
     }
     .admin-submit-guide {
       font-size: 0.9em;
       color: #808080;
-      margin: 0;  /* 안내문 여백 제거 */
+      margin: 0;
     }
     .admin-item-inputs {
       display: flex;
@@ -217,8 +234,8 @@
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 5px;  /* 안내문과 입력칸 간격 축소 */
-      margin-bottom: 5px; /* 아래쪽 간격 축소 */
+      margin-top: 5px;
+      margin-bottom: 5px;
     }
     .admin-item-inputs select,
     .admin-item-inputs input {
@@ -301,7 +318,7 @@
         <li><button onclick="showCategory('재료(1셋)')">재료(1셋)</button></li>
         <li><button onclick="showCategory('가구')">가구</button></li>
         <li><button onclick="showCategory('레시피')">레시피</button></li>
-        <li><button onclick="showCategory('옷/신발/악세서리')">옷/신발/악세서리</button></li>
+        <li><button onclick="showCategory('의류/잡화')">의류/잡화</button></li>
         <li><button onclick="showCategory('인기 아이템')">인기 아이템</button></li>
         <li><button onclick="showCategory('올클 레시피')">올클 레시피</button></li>
         <li><button onclick="showCategory('올클 아이템')">올클 아이템</button></li>
@@ -323,10 +340,12 @@
         </tr>
       </thead>
       <tbody>
-        <!-- 초기에는 검색 결과 메시지만 보임 -->
+        <!-- 초기에는 검색 결과 메시지만 표시 -->
         <tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>
       </tbody>
     </table>
+    <!-- 페이지네이션 컨트롤 -->
+    <div id="paginationControls" style="margin-top: 10px;"></div>
   </div>
 
   <!-- 사용자용 아이템 제출 섹션 -->
@@ -344,7 +363,7 @@
         <option value="재료(1셋)">재료(1셋)</option>
         <option value="가구">가구</option>
         <option value="레시피">레시피</option>
-        <option value="옷/신발/악세서리">옷/신발/악세서리</option>
+        <option value="의류/잡화">의류/잡화</option>
         <option value="인기 아이템">인기 아이템</option>
         <option value="완제품">완제품</option>
         <option value="만지작">만지작</option>
@@ -372,7 +391,7 @@
         <option value="재료(1셋)">재료(1셋)</option>
         <option value="가구">가구</option>
         <option value="레시피">레시피</option>
-        <option value="옷/신발/악세서리">옷/신발/악세서리</option>
+        <option value="의류/잡화">의류/잡화</option>
         <option value="인기 아이템">인기 아이템</option>
         <option value="올클 레시피">올클 레시피</option>
         <option value="올클 아이템">올클 아이템</option>
@@ -402,6 +421,9 @@
 
   <script>
     /************* 기본 시세표 기능 *************/
+    let currentPage = 1;
+    const itemsPerPage = 10; // 한 페이지당 10개씩 표시
+
     function toggleMenu() {
       document.getElementById("categoryMenu").classList.toggle("show");
     }
@@ -409,7 +431,7 @@
       return arr.sort((a, b) => a.name.localeCompare(b.name));
     }
     
-    // staticItems: 기존 모든 정적 아이템 데이터 – 아까 보내주신 전체 아이템 목록
+    // 정적 아이템 데이터
     const staticItems = [
       // 재료(1셋)
       { category: "재료(1셋)", name: "자패", price: "1마일" },
@@ -504,7 +526,7 @@
       { category: "올클 아이템", name: "토용 (36종, 마스터 포함)", price: "100마일" },
       { category: "올클 아이템", name: "음악 (107종)", price: "300마일" },
       { category: "올클 아이템", name: "NPC 액자 (62종)", price: "1600마일" },
-      // 인기 아이템 (이전 희귀 아이템)
+      // 인기 아이템
       { category: "인기 아이템", name: "스코틀랜드 모자", price: "20마일" },
       { category: "인기 아이템", name: "복고양이", price: "20마일" },
       { category: "인기 아이템", name: "5층탑", price: "30마일" },
@@ -520,7 +542,7 @@
       { category: "인기 아이템", name: "낯선고양이 가방", price: "25마일" },
       { category: "인기 아이템", name: "분리수거 종이 묶음", price: "30마일" },
       { category: "인기 아이템", name: "위대한 조각", price: "60마일" },
-      // 완제품 (도구)
+      // 완제품
       { category: "완제품", name: "금 낚싯대", price: "2마일" },
       { category: "완제품", name: "금 삽", price: "2마일" },
       { category: "완제품", name: "금 물뿌리개", price: "2마일" },
@@ -558,8 +580,8 @@
       { category: "액자", name: "마틸다의 사진", price: "30마일" },
       // 조각
       { category: "조각", name: "아름다운 조각", price: "10마일" },
-      { category: "조각", name: "무사의 조각", price: "10마일" }
-      // ============ 토용 ============
+      { category: "조각", name: "무사의 조각", price: "10마일" },
+      // 토용
       { category: "토용", name: "가면 토용", price: "1마일" },
       { category: "토용", name: "가시 토용", price: "1마일" },
       { category: "토용", name: "꿀꿀 토용", price: "1마일" },
@@ -595,7 +617,7 @@
       { category: "토용", name: "콰삭 토용", price: "1마일" },
       { category: "토용", name: "툭툭 토용", price: "1마일" },
       { category: "토용", name: "푸르르 토용", price: "1마일" },
-      { category: "토용", name: "후후 토용", price: "1마일" },
+      { category: "토용", name: "후후 토용", price: "1마일" }
     ];
     
     // Firestore "userItems" 컬렉션의 데이터를 실시간 구독하여 관리자 제출 데이터(userItems)를 업데이트
@@ -607,21 +629,29 @@
         snapshot.forEach(doc => {
           userItems.push(doc.data());
         });
+        // 검색창이 비어있을 때 기본 메시지 유지
         if(document.getElementById("search").value.trim() === ""){
           document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
+          document.getElementById("paginationControls").innerHTML = "";
         }
       });
     
-    // 시세표에 아이템들을 표시하는 함수 (staticItems + 관리자 제출 데이터)
+    // 페이지네이션 적용하여 아이템들을 표시하는 함수
     function displayItems(itemsArray) {
       const tableBody = document.querySelector("#itemTable tbody");
       if (itemsArray.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="3">표시할 아이템이 없습니다.</td></tr>`;
+        document.getElementById("paginationControls").innerHTML = "";
         return;
       }
       itemsArray = sortByName(itemsArray);
+      const totalPages = Math.ceil(itemsArray.length / itemsPerPage);
+      if (currentPage > totalPages) currentPage = totalPages;
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const itemsToDisplay = itemsArray.slice(startIndex, endIndex);
       let html = "";
-      itemsArray.forEach(item => {
+      itemsToDisplay.forEach(item => {
         html += `
           <tr>
             <td>${item.category}</td>
@@ -631,70 +661,76 @@
         `;
       });
       tableBody.innerHTML = html;
+      renderPagination(totalPages);
     }
     
-    // ====================== 검색 기능 (공백 제거 적용) ======================
+    function renderPagination(totalPages) {
+      const paginationDiv = document.getElementById("paginationControls");
+      let html = "";
+      if (currentPage > 1) {
+        html += `<button onclick="changePage(${currentPage - 1})">이전</button>`;
+      }
+      html += `<span>${currentPage} / ${totalPages}</span>`;
+      if (currentPage < totalPages) {
+        html += `<button onclick="changePage(${currentPage + 1})">다음</button>`;
+      }
+      paginationDiv.innerHTML = html;
+    }
+    
+    function changePage(page) {
+      currentPage = page;
+      const searchText = document.getElementById("search").value.trim();
+      if (searchText) {
+        filterItems();
+      } else {
+        displayItems([...staticItems, ...userItems]);
+      }
+    }
+    
+    // ====================== 검색 기능 ======================
     function filterItems() {
       const searchText = document.getElementById("search").value.toLowerCase().trim();
-      const tableBody = document.querySelector("#itemTable tbody");
+      currentPage = 1;
       if (!searchText) {
-        tableBody.innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
+        document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
+        document.getElementById("paginationControls").innerHTML = "";
         return;
       }
       const normalizedSearchText = searchText.replace(/\s+/g, '');
       let filtered = [...staticItems, ...userItems].filter(item => 
         item.name.toLowerCase().replace(/\s+/g, '').includes(normalizedSearchText)
       );
-      filtered = sortByName(filtered);
       if (filtered.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="3">검색 결과가 없습니다.</td></tr>`;
+        document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 없습니다.</td></tr>`;
+        document.getElementById("paginationControls").innerHTML = "";
       } else {
-        let html = "";
-        filtered.forEach(item => {
-          html += `
-            <tr>
-              <td>${item.category}</td>
-              <td>${item.name}</td>
-              <td>${item.price}</td>
-            </tr>
-          `;
-        });
-        tableBody.innerHTML = html;
+        displayItems(filtered);
       }
     }
     
     // ====================== 카테고리 필터 ======================
     function showCategory(catName) {
       document.getElementById("search").value = "";
+      currentPage = 1;
       let filtered = [...staticItems, ...userItems].filter(item => item.category === catName);
-      filtered = sortByName(filtered);
-      const tableBody = document.querySelector("#itemTable tbody");
       if (filtered.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="3">${catName} 카테고리에 해당하는 아이템이 없습니다.</td></tr>`;
+        document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">${catName} 카테고리에 해당하는 아이템이 없습니다.</td></tr>`;
+        document.getElementById("paginationControls").innerHTML = "";
       } else {
-        let html = "";
-        filtered.forEach(item => {
-          html += `
-            <tr>
-              <td>${item.category}</td>
-              <td>${item.name}</td>
-              <td>${item.price}</td>
-            </tr>
-          `;
-        });
-        tableBody.innerHTML = html;
+        displayItems(filtered);
       }
       toggleMenu();
     }
     
-    // ====================== 전체보기 (검색어 입력 없을 때는 기본 메시지 보임) ======================
+    // ====================== 전체보기 ======================
     function showAll() {
       document.getElementById("search").value = "";
-      document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
+      currentPage = 1;
+      displayItems([...staticItems, ...userItems]);
       toggleMenu();
     }
     
-    /********** 관리자용 아이템 제출 (즉시 홈페이지 반영) **********/
+    /********** 관리자용 아이템 제출 **********/
     const ADD_PASSWORD = "0998star";
     const DELETE_PASSWORD = "0998dstar";
     function submitUserItem() {
