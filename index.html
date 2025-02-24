@@ -360,6 +360,7 @@
       Kakao: <a href="https://open.kakao.com/o/sCWfT4eh">뿌동이포스트</a> | Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">@ppudong2</a>
     </p>
     <div class="user-item-inputs">
+      <!-- 사용자 제출 섹션에서 "토용" 옵션 삭제 -->
       <select id="submissionCategory">
         <option value="재료(1셋)">재료(1셋)</option>
         <option value="가구">가구</option>
@@ -368,7 +369,6 @@
         <option value="완제품">완제품</option>
         <option value="주민액자">주민액자</option>
         <option value="미술품">미술품</option>
-        <option value="토용">토용</option>
       </select>
       <input type="text" id="submissionItemName" placeholder="정확한 아이템 이름">
       <input type="text" id="submissionItemPrice" placeholder="시세(예:10마일)">
@@ -497,7 +497,6 @@
       { category: "레시피", name: "돈다발 레시피", price: "20마일" },
       { category: "레시피", name: "버섯 램프 레시피", price: "30마일" },
       { category: "레시피", name: "벚꽃 미니백 레시피", price: "30마일" },
-      { category: "레시피", name: "야광 벽 스티커 레시피", price: "20마일" },
       { category: "레시피", name: "얼음 테이블 레시피", price: "30마일" },
       { category: "레시피", name: "유인용 오리 레시피", price: "2마일" },
       { category: "레시피", name: "초록낙엽 레시피", price: "30마일" },
@@ -571,7 +570,7 @@
       { category: "알바", name: "나무 옮기기 소량", price: "20~30마일" },
       { category: "알바", name: "나무 옮기기 대량", price: "30~40마일" },
       { category: "알바", name: "카탈 알바 100개", price: "150~200마일" },
-      // 액자 → 주민액자
+      // 주민액자 (기존 액자)
       { category: "주민액자", name: "애플의 사진", price: "10마일" },
       { category: "주민액자", name: "레온의 사진", price: "30마일" },
       { category: "주민액자", name: "저스틴의 사진", price: "30마일" },
@@ -579,7 +578,7 @@
       { category: "주민액자", name: "사브리나의 사진", price: "30마일" },
       { category: "주민액자", name: "올리버의 사진", price: "30마일" },
       { category: "주민액자", name: "마틸다의 사진", price: "30마일" },
-      // 조각 → 미술품
+      // 미술품 (기존 조각)
       { category: "미술품", name: "아름다운 조각", price: "10마일" },
       { category: "미술품", name: "무사의 조각", price: "10마일" },
       // 토용
@@ -733,7 +732,69 @@
       toggleMenu();
     }
     
+    /********** 사용자 제출 아이템 **********/
+    // 카테고리별로 다른 Firestore 컬렉션에 저장할 수 있도록 매핑 함수 정의
+    // 이제 영어 컬렉션명이 아니라, 카탈로그에 표시된 한국어 이름을 그대로 사용합니다.
+    function getSubmissionCollection(category) {
+      switch(category) {
+        case "재료(1셋)":
+          return "재료(1셋)";
+        case "가구":
+          return "가구";
+        case "레시피":
+          return "레시피";
+        case "의류/잡화":
+          return "의류/잡화";
+        case "완제품":
+          return "완제품";
+        case "주민액자":
+          return "주민액자";
+        case "미술품":
+          return "미술품";
+        default:
+          return "사용자제출";
+      }
+    }
+    
+    function submitSubmission() {
+      const category = document.getElementById("submissionCategory").value;
+      const name = document.getElementById("submissionItemName").value.trim();
+      const price = document.getElementById("submissionItemPrice").value.trim();
+      const island = document.getElementById("submissionIsland").value.trim();
+      const resultDiv = document.getElementById("submissionResult");
+
+      if (!name || !price || !island) {
+        resultDiv.style.color = "red";
+        resultDiv.textContent = "카테고리, 정확한 아이템 이름, 시세, 섬/주대 이름은 필수 입력사항입니다.";
+        return;
+      }
+      
+      // 선택된 카테고리에 따라 Firestore 컬렉션 이름을 결정 (한국어 그대로 사용)
+      const collectionName = getSubmissionCollection(category);
+      
+      db.collection(collectionName).add({
+        category: category,
+        name: name,
+        price: price,
+        island: island,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        resultDiv.style.color = "green";
+        resultDiv.textContent = "아이템 제출이 완료되었습니다.";
+        document.getElementById("submissionItemName").value = "";
+        document.getElementById("submissionItemPrice").value = "";
+        document.getElementById("submissionIsland").value = "";
+      })
+      .catch((error) => {
+        console.error("Error adding submission: ", error);
+        resultDiv.style.color = "red";
+        resultDiv.textContent = "제출 중 오류가 발생했습니다.";
+      });
+    }
+    
     /********** 관리자용 아이템 제출 **********/
+    // 관리자용 데이터는 "추가아이템(관리자용)" 컬렉션에 저장하도록 수정합니다.
     const ADD_PASSWORD = "0998star";
     const DELETE_PASSWORD = "0998dstar";
     function submitUserItem() {
@@ -755,7 +816,7 @@
           resultDiv.textContent = "비밀번호가 올바르지 않습니다.";
           return;
         }
-        db.collection("userItems").add({
+        db.collection("추가아이템(관리자용)").add({
           category: category,
           name: name,
           price: price,
@@ -779,7 +840,7 @@
           resultDiv.textContent = "비밀번호가 올바르지 않습니다.";
           return;
         }
-        db.collection("userItems")
+        db.collection("추가아이템(관리자용)")
           .where("category", "==", category)
           .where("name", "==", name)
           .get()
@@ -808,41 +869,6 @@
             resultDiv.textContent = "삭제 중 오류가 발생했습니다.";
           });
       }
-    }
-    
-    /********** 사용자 제출 아이템 **********/
-    function submitSubmission() {
-      const category = document.getElementById("submissionCategory").value;
-      const name = document.getElementById("submissionItemName").value.trim();
-      const price = document.getElementById("submissionItemPrice").value.trim();
-      const island = document.getElementById("submissionIsland").value.trim();
-      const resultDiv = document.getElementById("submissionResult");
-
-      if (!name || !price || !island) {
-        resultDiv.style.color = "red";
-        resultDiv.textContent = "카테고리, 정확한 아이템 이름, 시세, 섬/주대 이름은 필수 입력사항입니다.";
-        return;
-      }
-
-      db.collection("userSubmissions").add({
-        category: category,
-        name: name,
-        price: price,
-        island: island,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      .then(() => {
-        resultDiv.style.color = "green";
-        resultDiv.textContent = "아이템 제출이 완료되었습니다.";
-        document.getElementById("submissionItemName").value = "";
-        document.getElementById("submissionItemPrice").value = "";
-        document.getElementById("submissionIsland").value = "";
-      })
-      .catch((error) => {
-        console.error("Error adding submission: ", error);
-        resultDiv.style.color = "red";
-        resultDiv.textContent = "제출 중 오류가 발생했습니다.";
-      });
     }
   </script>
 </body>
