@@ -250,8 +250,9 @@
     .admin-item-inputs input#userItemName {
       width: 150px;
     }
+    /* 관리자용 시세 입력 칸: 사용자와 동일한 100px */
     .admin-item-inputs input#userItemPrice {
-      width: 100px;
+      width: 100px !important;
     }
     .admin-item-inputs input#userPassword {
       width: 150px;
@@ -325,8 +326,8 @@
         <li><button onclick="showCategory('완제품')">완제품</button></li>
         <li><button onclick="showCategory('만지작')">만지작</button></li>
         <li><button onclick="showCategory('알바')">알바</button></li>
-        <li><button onclick="showCategory('액자')">액자</button></li>
-        <li><button onclick="showCategory('조각')">조각</button></li>
+        <li><button onclick="showCategory('주민액자')">주민액자</button></li>
+        <li><button onclick="showCategory('미술품')">미술품</button></li>
         <li><button onclick="showCategory('토용')">토용</button></li>
         <li><button onclick="showAll()">전체보기</button></li>
       </ul>
@@ -364,11 +365,10 @@
         <option value="가구">가구</option>
         <option value="레시피">레시피</option>
         <option value="의류/잡화">의류/잡화</option>
-        <option value="인기 아이템">인기 아이템</option>
         <option value="완제품">완제품</option>
-        <option value="만지작">만지작</option>
-        <option value="액자">액자</option>
-        <option value="조각">조각</option>
+        <option value="주민액자">주민액자</option>
+        <option value="미술품">미술품</option>
+        <option value="토용">토용</option>
       </select>
       <input type="text" id="submissionItemName" placeholder="정확한 아이템 이름">
       <input type="text" id="submissionItemPrice" placeholder="시세(예:10마일)">
@@ -398,9 +398,9 @@
         <option value="완제품">완제품</option>
         <option value="만지작">만지작</option>
         <option value="알바">알바</option>
-        <option value="액자">액자</option>
-        <option value="조각">조각</option>
-        <option value="액자">토용</option>
+        <option value="주민액자">주민액자</option>
+        <option value="미술품">미술품</option>
+        <option value="토용">토용</option>
       </select>
       <input type="text" id="userItemName" placeholder="아이템 이름">
       <input type="text" id="userItemPrice" placeholder="시세">
@@ -423,6 +423,7 @@
     /************* 기본 시세표 기능 *************/
     let currentPage = 1;
     const itemsPerPage = 10; // 한 페이지당 10개씩 표시
+    let currentItems = [];  // 현재 필터링된(검색/카테고리/전체보기) 아이템 목록
 
     function toggleMenu() {
       document.getElementById("categoryMenu").classList.toggle("show");
@@ -431,7 +432,7 @@
       return arr.sort((a, b) => a.name.localeCompare(b.name));
     }
     
-    // 정적 아이템 데이터
+    // 정적 아이템 데이터 (카테고리명 업데이트됨)
     const staticItems = [
       // 재료(1셋)
       { category: "재료(1셋)", name: "자패", price: "1마일" },
@@ -570,17 +571,17 @@
       { category: "알바", name: "나무 옮기기 소량", price: "20~30마일" },
       { category: "알바", name: "나무 옮기기 대량", price: "30~40마일" },
       { category: "알바", name: "카탈 알바 100개", price: "150~200마일" },
-      // 액자
-      { category: "액자", name: "애플의 사진", price: "10마일" },
-      { category: "액자", name: "레온의 사진", price: "30마일" },
-      { category: "액자", name: "저스틴의 사진", price: "30마일" },
-      { category: "액자", name: "미애의 사진", price: "10마일" },
-      { category: "액자", name: "사브리나의 사진", price: "30마일" },
-      { category: "액자", name: "올리버의 사진", price: "30마일" },
-      { category: "액자", name: "마틸다의 사진", price: "30마일" },
-      // 조각
-      { category: "조각", name: "아름다운 조각", price: "10마일" },
-      { category: "조각", name: "무사의 조각", price: "10마일" },
+      // 액자 → 주민액자
+      { category: "주민액자", name: "애플의 사진", price: "10마일" },
+      { category: "주민액자", name: "레온의 사진", price: "30마일" },
+      { category: "주민액자", name: "저스틴의 사진", price: "30마일" },
+      { category: "주민액자", name: "미애의 사진", price: "10마일" },
+      { category: "주민액자", name: "사브리나의 사진", price: "30마일" },
+      { category: "주민액자", name: "올리버의 사진", price: "30마일" },
+      { category: "주민액자", name: "마틸다의 사진", price: "30마일" },
+      // 조각 → 미술품
+      { category: "미술품", name: "아름다운 조각", price: "10마일" },
+      { category: "미술품", name: "무사의 조각", price: "10마일" },
       // 토용
       { category: "토용", name: "가면 토용", price: "1마일" },
       { category: "토용", name: "가시 토용", price: "1마일" },
@@ -633,6 +634,7 @@
         if(document.getElementById("search").value.trim() === ""){
           document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
           document.getElementById("paginationControls").innerHTML = "";
+          currentItems = [];
         }
       });
     
@@ -679,12 +681,7 @@
     
     function changePage(page) {
       currentPage = page;
-      const searchText = document.getElementById("search").value.trim();
-      if (searchText) {
-        filterItems();
-      } else {
-        displayItems([...staticItems, ...userItems]);
-      }
+      displayItems(currentItems);
     }
     
     // ====================== 검색 기능 ======================
@@ -694,6 +691,7 @@
       if (!searchText) {
         document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
         document.getElementById("paginationControls").innerHTML = "";
+        currentItems = [];
         return;
       }
       const normalizedSearchText = searchText.replace(/\s+/g, '');
@@ -703,8 +701,10 @@
       if (filtered.length === 0) {
         document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 없습니다.</td></tr>`;
         document.getElementById("paginationControls").innerHTML = "";
+        currentItems = [];
       } else {
-        displayItems(filtered);
+        currentItems = filtered;
+        displayItems(currentItems);
       }
     }
     
@@ -716,8 +716,10 @@
       if (filtered.length === 0) {
         document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">${catName} 카테고리에 해당하는 아이템이 없습니다.</td></tr>`;
         document.getElementById("paginationControls").innerHTML = "";
+        currentItems = [];
       } else {
-        displayItems(filtered);
+        currentItems = filtered;
+        displayItems(currentItems);
       }
       toggleMenu();
     }
@@ -726,7 +728,8 @@
     function showAll() {
       document.getElementById("search").value = "";
       currentPage = 1;
-      displayItems([...staticItems, ...userItems]);
+      currentItems = [...staticItems, ...userItems];
+      displayItems(currentItems);
       toggleMenu();
     }
     
