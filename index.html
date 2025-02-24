@@ -257,6 +257,14 @@
     .admin-item-inputs input#userPassword {
       width: 150px;
     }
+    /* 방문자수 영역 */
+    .visitor-counter {
+      font-family: "Jua", sans-serif;
+      color: #006400; /* 진한 초록색 */
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
     /* Footer 스타일 */
     footer {
       margin-top: 30px;
@@ -290,6 +298,63 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    // 페이지 로드 시 방문자 수 갱신
+    window.onload = () => {
+      updateVisitorCount();
+    };
+
+    // 방문자 카운트 갱신 로직 (예시)
+    async function updateVisitorCount() {
+      try {
+        const docRef = db.collection("visitorData").doc("count");
+        await db.runTransaction(async (transaction) => {
+          const docSnapshot = await transaction.get(docRef);
+          const todayString = getTodayString(); // 'YYYY-MM-DD'
+          
+          if (!docSnapshot.exists) {
+            // 문서가 없으면 새로 생성
+            transaction.set(docRef, {
+              today: 1,
+              total: 1,
+              lastDate: todayString
+            });
+            // 화면에 표시 --> today 1 / total 1
+            document.querySelector(".visitor-counter").textContent = "today 1 / total 1";
+          } else {
+            // 문서가 있으면 데이터 갱신
+            const data = docSnapshot.data();
+            let { today, total, lastDate } = data;
+            
+            if (lastDate === todayString) {
+              // 같은 날짜면 today, total 각각 1 증가
+              today += 1;
+              total += 1;
+            } else {
+              // 새로운 날짜면 today는 1로 리셋, total만 증가
+              today = 1;
+              total += 1;
+              lastDate = todayString;
+            }
+            // Firestore에 반영
+            transaction.update(docRef, { today, total, lastDate });
+            // 화면에 표시 --> today X / total Y
+            document.querySelector(".visitor-counter").textContent = `today ${today} / total ${total}`;
+          }
+        });
+      } catch (error) {
+        console.error("Failed to update visitor count:", error);
+      }
+    }
+
+    // 오늘 날짜(yyyy-mm-dd) 문자열 반환(간단 구현)
+    function getTodayString() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const dd = String(now.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
   </script>
 </head>
 <body>
@@ -412,6 +477,9 @@
     <div id="userItemResult"></div>
   </div>
 
+  <!-- 방문자 수 표시 -->
+  <div class="visitor-counter"></div>
+
   <!-- Footer -->
   <footer>
     © 2025 뿌동이. All Rights Reserved.<br>
@@ -432,7 +500,7 @@
       return arr.sort((a, b) => a.name.localeCompare(b.name));
     }
     
-    // 정적 아이템 데이터 (카테고리명 업데이트됨)
+    // 최종본: 모든 아이템 (생략 없이)
     const staticItems = [
       // 재료(1셋)
       { category: "재료(1셋)", name: "자패", price: "1마일" },
@@ -497,6 +565,7 @@
       { category: "레시피", name: "돈다발 레시피", price: "20마일" },
       { category: "레시피", name: "버섯 램프 레시피", price: "30마일" },
       { category: "레시피", name: "벚꽃 미니백 레시피", price: "30마일" },
+      { category: "레시피", name: "야광 벽 스티커 레시피", price: "20마일" },
       { category: "레시피", name: "얼음 테이블 레시피", price: "30마일" },
       { category: "레시피", name: "유인용 오리 레시피", price: "2마일" },
       { category: "레시피", name: "초록낙엽 레시피", price: "30마일" },
@@ -570,7 +639,7 @@
       { category: "알바", name: "나무 옮기기 소량", price: "20~30마일" },
       { category: "알바", name: "나무 옮기기 대량", price: "30~40마일" },
       { category: "알바", name: "카탈 알바 100개", price: "150~200마일" },
-      // 주민액자 (기존 액자)
+      // 주민액자
       { category: "주민액자", name: "애플의 사진", price: "10마일" },
       { category: "주민액자", name: "레온의 사진", price: "30마일" },
       { category: "주민액자", name: "저스틴의 사진", price: "30마일" },
@@ -578,7 +647,7 @@
       { category: "주민액자", name: "사브리나의 사진", price: "30마일" },
       { category: "주민액자", name: "올리버의 사진", price: "30마일" },
       { category: "주민액자", name: "마틸다의 사진", price: "30마일" },
-      // 미술품 (기존 조각)
+      // 미술품
       { category: "미술품", name: "아름다운 조각", price: "10마일" },
       { category: "미술품", name: "무사의 조각", price: "10마일" },
       // 토용
@@ -629,7 +698,7 @@
         snapshot.forEach(doc => {
           userItems.push(doc.data());
         });
-        // 검색창이 비어있을 때 기본 메시지 유지
+        // 검색창이 비어있으면 기본 메시지
         if(document.getElementById("search").value.trim() === ""){
           document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
           document.getElementById("paginationControls").innerHTML = "";
@@ -733,8 +802,6 @@
     }
     
     /********** 사용자 제출 아이템 **********/
-    // 카테고리별로 다른 Firestore 컬렉션에 저장할 수 있도록 매핑 함수 정의
-    // 이제 영어 컬렉션명이 아니라, 카탈로그에 표시된 한국어 이름을 그대로 사용합니다.
     function getSubmissionCollection(category) {
       switch(category) {
         case "재료(1셋)":
@@ -769,7 +836,6 @@
         return;
       }
       
-      // 선택된 카테고리에 따라 Firestore 컬렉션 이름을 결정 (한국어 그대로 사용)
       const collectionName = getSubmissionCollection(category);
       
       db.collection(collectionName).add({
@@ -794,7 +860,6 @@
     }
     
     /********** 관리자용 아이템 제출 **********/
-    // 관리자용 데이터는 "추가아이템(관리자용)" 컬렉션에 저장하도록 수정합니다.
     const ADD_PASSWORD = "0998star";
     const DELETE_PASSWORD = "0998dstar";
     function submitUserItem() {
@@ -810,6 +875,7 @@
         return;
       }
       
+      // 아이템 추가
       if (price) {
         if (password !== ADD_PASSWORD) {
           resultDiv.style.color = "red";
@@ -835,6 +901,7 @@
           resultDiv.textContent = "추가 중 오류가 발생했습니다.";
         });
       } else {
+        // 아이템 삭제
         if (password !== DELETE_PASSWORD) {
           resultDiv.style.color = "red";
           resultDiv.textContent = "비밀번호가 올바르지 않습니다.";
