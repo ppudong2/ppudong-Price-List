@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>뿌동숲 시세표 - 공사 중</title>
-  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>뿌동숲 시세표</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
   <style>
     body {
       font-family: "Jua", sans-serif;
@@ -16,80 +17,448 @@
     h1 {
       font-size: 2.5em;
       color: #4caf50;
-      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      padding: 20px 0;
+      white-space: nowrap;
+      cursor: pointer;
     }
     .container {
-      background: white;
+      background: #fff;
       padding: 20px;
       border-radius: 15px;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-      max-width: 600px;
+      max-width: 800px;
       margin: auto;
+      position: relative;
     }
-    .notice {
-      font-size: 1.2em;
-      color: #b33c3c;
-      margin-top: 20px;
+    .search-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .hamburger {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 25px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .bar {
+      height: 3px;
+      width: 25px;
+      background-color: #4caf50;
+      border-radius: 2px;
+    }
+    .search-box input {
+      height: 38px;
+      padding: 0 10px;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      color: #4caf50;
+      font-size: 0.9em;
+      width: 60%;
+    }
+    .search-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.5em;
+      color: #4caf50;
+    }
+    /* 카테고리 메뉴 */
+    .menu {
+      position: absolute;
+      top: 70px;
+      left: 20px;
+      background: #fff;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      width: 280px;
+      padding: 10px;
+      display: none;
+      z-index: 999;
+    }
+    .menu.show {
+      display: block;
+    }
+    .menu ul {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .menu li {
+      display: flex;
+      justify-content: center;
+    }
+    .menu button {
+      width: 120px;
+      height: 40px;
+      background: #f8f3c8;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .menu button:hover {
+      background: #e0dab0;
+    }
+    /* 분류 메뉴 */
+    .sub-menu {
+      position: absolute;
+      top: 70px;
+      left: 20px;
+      background: #fff;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      width: 280px;
+      padding: 10px;
+      display: none;
+      z-index: 999;
+    }
+    .sub-menu.show {
+      display: block;
+    }
+    .sub-menu ul {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 10px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sub-menu li {
+      display: flex;
+      justify-content: center;
+    }
+    .sub-menu button {
+      width: 140px;
+      height: 40px;
+      background: #f8f3c8;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .sub-menu button:hover {
+      background: #e0dab0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+      color: #000;
+      font-size: 0.9em;
+    }
+    th {
+      background-color: #4caf50;
+      color: #fff;
+    }
+    #paginationControls button {
+      padding: 5px 10px;
+      margin: 0 5px;
+      border: 2px solid #4caf50;
+      background: #f8f3c8;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #paginationControls span {
+      margin: 0 5px;
     }
     .visitor-counter {
-      font-size: 1em;
+      font-family: "Jua", sans-serif;
       color: #006400;
       font-weight: bold;
       margin-top: 20px;
+      margin-bottom: 10px;
     }
     footer {
       margin-top: 30px;
+      padding: 10px;
       font-size: 0.8em;
       color: #808080;
+      font-family: "Gulim", sans-serif;
+    }
+    footer a {
+      color: #808080;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>뿌동숲 시세표</h1>
-  
+  <h1 onclick="location.reload()">
+    <i class="fa-solid fa-tree"></i> 뿌동숲 시세표 <i class="fa-solid fa-tree"></i>
+  </h1>
   <div class="container">
-    <p class="notice">현재 홈페이지 개편 작업 중입니다.<br> 2025.02.26까지 공사 진행 예정입니다.</p>
-    <p class="notice">이용에 불편을 드려 죄송합니다.</p>
+    <!-- 검색 영역 -->
+    <div class="search-box">
+      <div class="hamburger" onclick="toggleCategoryMenu()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <input type="text" id="search" placeholder="아이템 이름 검색" onkeyup="applyFilter()">
+      <button class="search-button" onclick="applyFilter()">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+    <!-- 카테고리 메뉴 -->
+    <div class="menu" id="categoryMenu">
+      <ul>
+        <li><button onclick="pickCategory('')">(전체)</button></li>
+        <li><button onclick="pickCategory('재료')">재료</button></li>
+        <li><button onclick="pickCategory('아이템')">아이템</button></li>
+        <li><button onclick="pickCategory('미술품')">미술품</button></li>
+        <li><button onclick="pickCategory('레시피')">레시피</button></li>
+        <li><button onclick="pickCategory('만지작')">만지작</button></li>
+        <li><button onclick="pickCategory('알바')">알바</button></li>
+      </ul>
+    </div>
+    <!-- 분류 메뉴 -->
+    <div class="sub-menu" id="divisionMenu">
+      <ul id="divisionList"></ul>
+    </div>
+    <!-- 아이템 테이블 -->
+    <table id="itemTable">
+      <thead>
+        <tr>
+          <th>카테고리</th>
+          <th>분류</th>
+          <th>아이템</th>
+          <th>개수</th>
+          <th>시세</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5">검색/필터 결과가 표시됩니다.</td></tr>
+      </tbody>
+    </table>
+    <div id="paginationControls"></div>
   </div>
-  
-  <div class="visitor-counter">방문자 수: 로딩 중...</div>
-  
+  <div class="visitor-counter"></div>
   <footer>
     © 2025 뿌동이. All Rights Reserved.<br>
-    제작: 뿌동이 주대 | Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">@ppudong2</a>
+    제작: 뿌동이 주대<br>
+    Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">@ppudong2</a>
   </footer>
-  
   <script>
-    // Firebase SDK 연결 (방문자 수 유지)
-    const firebaseConfig = {
-      apiKey: "AIzaSyA-EdZtqc1b9gp67OliSdJ7bWPNgEGUM7A",
-      authDomain: "ppudong-price-list.firebaseapp.com",
-      projectId: "ppudong-price-list",
-      storageBucket: "ppudong-price-list.firebasestorage.app",
-      messagingSenderId: "581105229110",
-      appId: "1:581105229110:web:870b7730b5b1271302a797",
-      measurementId: "G-6JYJ3W5KEH"
+    // updateVisitorCount() 호출은 잠시 주석 처리 (오류가 없다면 나중에 복원)
+    window.onload = function() {
+      // updateVisitorCount();
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    
-    async function updateVisitorCount() {
-      try {
-        const docRef = db.collection("visitorData").doc("count");
-        await db.runTransaction(async (transaction) => {
-          const docSnapshot = await transaction.get(docRef);
-          if (docSnapshot.exists) {
-            const data = docSnapshot.data();
-            document.querySelector(".visitor-counter").textContent = `방문자 수: today ${data.today} / total ${data.total}`;
-          } else {
-            document.querySelector(".visitor-counter").textContent = "방문자 수: 정보 없음";
-          }
-        });
-      } catch (error) {
-        console.error("Failed to load visitor count:", error);
+
+    let currentCategory = "";
+    let currentDivision = "";
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let currentItems = [];
+    const subDivisions = {
+      "": ["전체보기"],
+      "재료": ["전체보기", "일반", "계절", "특수/이벤트"],
+      "아이템": ["전체보기", "금도구", "산리오", "마일템"],
+      "미술품": ["전체보기"],
+      "레시피": ["전체보기", "기본", "계절", "올클"],
+      "만지작": ["전체보기"],
+      "알바": ["전체보기"]
+    };
+
+    function toggleCategoryMenu(){
+      document.getElementById("categoryMenu").classList.toggle("show");
+      document.getElementById("divisionMenu").classList.remove("show");
+    }
+
+    function pickCategory(cat){
+      document.getElementById("categoryMenu").classList.remove("show");
+      currentCategory = cat;
+      currentDivision = "";
+      if(cat === ""){
+        applyFilter();
+      } else {
+        fillDivisionMenu(cat);
+        document.getElementById("divisionMenu").classList.add("show");
       }
     }
-    window.onload = updateVisitorCount;
+
+    function fillDivisionMenu(cat){
+      const list = document.getElementById("divisionList");
+      list.innerHTML = "";
+      const arr = subDivisions[cat] || ["전체보기"];
+      arr.forEach(function(div){
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.textContent = div;
+        btn.onclick = function(){ pickDivision(div); };
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+
+    function pickDivision(div){
+      currentDivision = (div === "전체보기") ? "" : div;
+      document.getElementById("divisionMenu").classList.remove("show");
+      applyFilter();
+    }
+
+    function sortByName(arr){
+      return arr.sort(function(a, b){
+        return a.name.localeCompare(b.name);
+      });
+    }
+
+    const staticItems = [
+      { category:"재료", division:"목재", name:"목재", quantity:"1셋(30개)", price:"2마일" },
+      { category:"재료", division:"목재", name:"부드러운 목재", quantity:"1셋(30개)", price:"2마일" },
+      { category:"재료", division:"목재", name:"단단한 목재", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"목재", name:"대나무 토막", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"떡밥", quantity:"10셋(100개)", price:"20~25마일" },
+      { category:"재료", division:"일반", name:"잡초", quantity:"1셋(99개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"벌집", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"나뭇가지", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"돌", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"점토", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"철광석", quantity:"1셋(30개)", price:"2마일" },
+      { category:"재료", division:"일반", name:"금광석", quantity:"1셋(30개)", price:"20마일" },
+      { category:"재료", division:"일반", name:"덩굴", quantity:"1셋(30개)", price:"5마일" },
+      { category:"재료", division:"일반", name:"빛이끼", quantity:"1셋(50개)", price:"5마일" },
+      { category:"재료", division:"일반", name:"포장 과일", quantity:"40개", price:"10마일" },
+      { category:"재료", division:"일반", name:"사과", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"오렌지", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"배", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"체리", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"야자수", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"복숭아", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"자패", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"산호", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"방석고둥", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"거거", quantity:"1셋(10개)", price:"2마일" },
+      { category:"재료", division:"일반", name:"연잎성게", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"뮤렉스조개", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"바지락", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"소라고둥", quantity:"1셋(10개)", price:"1마일" }
+      { category:"재료", division:"일반", name:"밀", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"토마토", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"사탕수수", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"주황색 호박", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"초록색 호박", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"노란 호박", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"하얀 호박", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"감자", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"일반", name:"당근", quantity:"1셋(10개)", price:"1마일" }
+
+      { category:"재료", division:"계절", name:"벚꽃잎", quantity:"1셋(10개)", price:"5마일" },
+      { category:"재료", division:"계절", name:"봄의 대나무", quantity:"30개(1셋)", price:"5마일" },
+      { category:"재료", division:"특수/이벤트", name:"별의 조각", quantity:"10개(1셋)", price:"2마일" },
+      { category:"재료", division:"특수/이벤트", name:"사탕(할로윈)", quantity:"1개", price:"30마일" },
+      { category:"아이템", division:"금도구", name:"금 삽", quantity:"1개", price:"10~20마일" },
+      { category:"아이템", division:"금도구", name:"금 낚싯대", quantity:"1개", price:"10~20마일" },
+      { category:"아이템", division:"산리오", name:"산리오 개별 템", quantity:"1개", price:"2마일" },
+      { category:"아이템", division:"마일템", name:"간이창고", quantity:"1개", price:"10마일" },
+      { category:"아이템", division:"마일템", name:"소박한 파티 라이트", quantity:"1개", price:"5마일" },
+      { category:"미술품", division:"", name:"명화", quantity:"1개", price:"5마일" },
+      { category:"미술품", division:"", name:"위대한 조각", quantity:"1개", price:"60마일" },
+      { category:"레시피", division:"기본", name:"삽 레시피", quantity:"1개", price:"200마일" },
+      { category:"레시피", division:"기본", name:"낚싯대 레시피", quantity:"1개", price:"10~20마일" },
+      { category:"레시피", division:"금도구", name:"금 삽 레시피", quantity:"1개", price:"200마일" },
+      { category:"레시피", division:"올클", name:"벚꽃 (15종)", quantity:"", price:"400마일" },
+      { category:"레시피", division:"올클", name:"머메이드 (15종)", quantity:"", price:"400마일" }
+    ];
+
+    function applyFilter(){
+      currentPage = 1;
+      const searchText = document.getElementById("search").value.trim().toLowerCase();
+      let result = staticItems.slice();
+      if(currentCategory){
+        result = result.filter(function(item){
+          return item.category === currentCategory;
+        });
+      }
+      if(currentDivision){
+        result = result.filter(function(item){
+          return item.division === currentDivision;
+        });
+      }
+      if(searchText){
+        result = result.filter(function(item){
+          return item.name.toLowerCase().includes(searchText);
+        });
+      }
+      result = sortByName(result);
+      if(result.length === 0){
+        document.querySelector("#itemTable tbody").innerHTML = '<tr><td colspan="5">검색/필터 결과가 없습니다.</td></tr>';
+        document.getElementById("paginationControls").innerHTML = "";
+        currentItems = [];
+      } else {
+        currentItems = result;
+        displayItems(currentItems);
+      }
+    }
+
+    function displayItems(itemsArray){
+      const tableBody = document.querySelector("#itemTable tbody");
+      if(itemsArray.length === 0){
+        tableBody.innerHTML = '<tr><td colspan="5">표시할 아이템이 없습니다.</td></tr>';
+        document.getElementById("paginationControls").innerHTML = "";
+        return;
+      }
+      const totalPages = Math.ceil(itemsArray.length / itemsPerPage);
+      if(currentPage > totalPages) currentPage = totalPages;
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const itemsToDisplay = itemsArray.slice(startIndex, endIndex);
+      let html = "";
+      itemsToDisplay.forEach(function(item){
+        html += '<tr>';
+        html += '<td>' + item.category + '</td>';
+        html += '<td>' + (item.division || "") + '</td>';
+        html += '<td>' + item.name + '</td>';
+        html += '<td>' + (item.quantity || "") + '</td>';
+        html += '<td>' + (item.price || "") + '</td>';
+        html += '</tr>';
+      });
+      tableBody.innerHTML = html;
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages){
+      const paginationDiv = document.getElementById("paginationControls");
+      if(totalPages === 0){
+        paginationDiv.innerHTML = "";
+        return;
+      }
+      let html = "";
+      if(currentPage > 1){
+        html += '<button onclick="changePage(' + (currentPage-1) + ')">이전</button>';
+      }
+      html += '<span>' + currentPage + ' / ' + totalPages + '</span>';
+      if(currentPage < totalPages){
+        html += '<button onclick="changePage(' + (currentPage+1) + ')">다음</button>';
+      }
+      paginationDiv.innerHTML = html;
+    }
+
+    function changePage(page){
+      currentPage = page;
+      displayItems(currentItems);
+    }
   </script>
 </body>
 </html>
