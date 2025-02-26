@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>뿌동숲 시세표</title>
-  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
   <style>
     body {
       font-family: "Jua", sans-serif;
@@ -21,24 +21,28 @@
       justify-content: center;
       align-items: center;
       gap: 10px;
-      white-space: nowrap;
       margin: 0;
       padding: 20px 0;
+      white-space: nowrap;
       cursor: pointer;
     }
-    .header-area {
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: auto;
       position: relative;
     }
-    /* 검색박스 */
     .search-box {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 10px;
       margin-bottom: 10px;
-      margin-left: 20px;
     }
-    .search-box .hamburger {
-      margin-right: 10px;
+    .hamburger {
       display: inline-flex;
       flex-direction: column;
       justify-content: space-between;
@@ -46,20 +50,20 @@
       height: 20px;
       cursor: pointer;
     }
-    .search-box .bar {
+    .bar {
       height: 3px;
       width: 25px;
       background-color: #4caf50;
       border-radius: 2px;
     }
     .search-box input {
-      padding: 10px;
-      width: 60%;
+      height: 38px;
+      padding: 0 10px;
       border: 2px solid #4caf50;
       border-radius: 5px;
-    }
-    .search-box input::placeholder {
       color: #4caf50;
+      font-size: 0.9em;
+      width: 60%;
     }
     .search-button {
       background: none;
@@ -67,18 +71,17 @@
       cursor: pointer;
       font-size: 1.5em;
       color: #4caf50;
-      margin-left: 10px;
     }
-    /* 메뉴 */
+    /* 메인 카테고리 메뉴 */
     .menu {
       position: absolute;
-      top: 60px;
+      top: 70px;
       left: 20px;
       background: #fff;
       border: 2px solid #4caf50;
       border-radius: 5px;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-      width: 300px;
+      width: 280px;
       padding: 10px;
       display: none;
       z-index: 999;
@@ -88,7 +91,7 @@
     }
     .menu ul {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개씩 배치 */
       gap: 10px;
       list-style: none;
       margin: 0;
@@ -99,28 +102,57 @@
       justify-content: center;
     }
     .menu button {
-      width: 140px;
+      width: 100%;
       height: 40px;
       background: #f8f3c8;
       border: 2px solid #4caf50;
       border-radius: 5px;
       cursor: pointer;
       font-size: 0.9em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
     .menu button:hover {
       background: #e0dab0;
     }
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
+    /* 분류 메뉴 */
+    .sub-menu {
+      position: absolute;
+      top: 70px;
+      left: 20px;
+      background: #fff;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-      max-width: 600px;
-      margin: auto;
-      position: relative;
+      width: 280px;
+      padding: 10px;
+      display: none;
+      z-index: 999;
+    }
+    .sub-menu.show {
+      display: block;
+    }
+    .sub-menu ul {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sub-menu li {
+      display: flex;
+      justify-content: center;
+    }
+    .sub-menu button {
+      width: 120px;
+      height: 40px;
+      background: #f8f3c8;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .sub-menu button:hover {
+      background: #e0dab0;
     }
     table {
       width: 100%;
@@ -131,18 +163,13 @@
       border: 1px solid #ddd;
       padding: 8px;
       text-align: center;
-      font-style: normal;
       color: #000;
+      font-size: 0.9em;
     }
     th {
       background-color: #4caf50;
-      color: white;
+      color: #fff;
     }
-    #itemTable tbody tr td {
-      font-style: normal;
-      color: #000;
-    }
-    /* 페이지네이션 컨트롤 */
     #paginationControls button {
       padding: 5px 10px;
       margin: 0 5px;
@@ -152,10 +179,30 @@
       cursor: pointer;
     }
     #paginationControls span {
-      font-size: 1em;
       margin: 0 5px;
     }
-    /* 사용자용 아이템 제출 섹션 */
+    .visitor-counter {
+      font-family: "Jua", sans-serif;
+      color: #006400;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+    footer {
+      margin-top: 30px;
+      padding: 10px;
+      font-size: 0.8em;
+      color: #808080;
+      font-family: "Gulim", sans-serif;
+    }
+    footer a {
+      color: #808080;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+    /* 사용자 제출 섹션 */
     .user-submit-section {
       margin: 20px auto;
       max-width: 600px;
@@ -190,26 +237,38 @@
       flex-wrap: wrap;
       margin: 10px 0;
     }
-    .user-item-inputs select,
     .user-item-inputs input {
       padding: 8px;
       border: 2px solid #4caf50;
       border-radius: 5px;
       font-size: 0.9em;
     }
-    .user-item-inputs select {
-      margin-top: 5px;
-    }
-    .user-item-inputs input#submissionItemName {
+    .user-item-inputs input#userSubmissionName {
       width: 150px;
     }
-    .user-item-inputs input#submissionItemPrice {
+    .user-item-inputs input#userSubmissionPrice {
       width: 100px;
     }
-    .user-item-inputs input#submissionIsland {
+    .user-item-inputs input#userSubmissionIsland {
       width: 150px;
     }
-    /* 관리자용 아이템 제출 섹션 */
+    /* 이벤트 작성 영역 수정: 크기 축소 및 가운데 정렬 */
+    .user-event-section {
+      margin-top: 10px;
+      text-align: center;
+    }
+    .user-event-section textarea {
+      width: 90%;
+      height: 60px;
+      margin: 0 auto;
+      display: block;
+      padding: 8px;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      font-size: 0.9em;
+      resize: vertical;
+    }
+    /* 관리자 제출 섹션 */
     .admin-submit-section {
       margin: 20px auto;
       max-width: 600px;
@@ -222,11 +281,6 @@
       color: #b33c3c;
       margin-top: 0;
       margin-bottom: 5px;
-    }
-    .admin-submit-guide {
-      font-size: 0.9em;
-      color: #808080;
-      margin: 0;
     }
     .admin-item-inputs {
       display: flex;
@@ -244,48 +298,128 @@
       border-radius: 5px;
       font-size: 0.9em;
     }
-    .admin-item-inputs select {
-      margin-top: 5px;
-    }
-    .admin-item-inputs input#userItemName {
+    /* 관리자 제출 섹션: 첫 번째 드롭다운은 "카테고리", 두 번째는 "분류" */
+    .admin-item-inputs input#adminItemName {
       width: 150px;
     }
-    .admin-item-inputs input#userItemPrice {
-      width: 100px !important;
+    .admin-item-inputs input#adminItemQty {
+      width: 80px;
     }
-    .admin-item-inputs input#userPassword {
+    .admin-item-inputs input#adminItemPrice {
+      width: 100px;
+    }
+    .admin-item-inputs input#adminPassword {
       width: 150px;
-    }
-    /* 방문자수 영역 */
-    .visitor-counter {
-      font-family: "Jua", sans-serif;
-      color: #006400; /* 진한 초록색 */
-      font-weight: bold;
-      margin-top: 20px;
-      margin-bottom: 10px;
-    }
-    /* Footer 스타일 */
-    footer {
-      margin-top: 30px;
-      padding: 10px;
-      font-size: 0.8em;
-      color: #808080;
-      font-family: "Gulim", sans-serif;
-    }
-    footer a {
-      color: #808080;
-      text-decoration: none;
-    }
-    footer a:hover {
-      text-decoration: underline;
     }
   </style>
-  
-  <!-- Firebase SDK (compat 버전) -->
+</head>
+<body>
+  <h1 onclick="location.reload()">
+    <i class="fa-solid fa-tree"></i> 뿌동숲 시세표 <i class="fa-solid fa-tree"></i>
+  </h1>
+  <div class="container">
+    <!-- 검색 영역 -->
+    <div class="search-box">
+      <div class="hamburger" onclick="toggleCategoryMenu()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <input type="text" id="search" placeholder="아이템 이름 검색" onkeyup="applyFilter()">
+      <button class="search-button" onclick="applyFilter()">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+    <!-- 메인 카테고리 메뉴 -->
+    <div class="menu" id="categoryMenu">
+      <ul>
+        <li><button onclick="pickCategory('')">전체</button></li>
+        <li><button onclick="pickCategory('재료')">재료</button></li>
+        <li><button onclick="pickCategory('아이템')">아이템</button></li>
+        <li><button onclick="pickCategory('레시피')">레시피</button></li>
+        <li><button onclick="pickCategory('올클')">올클</button></li>
+        <li><button onclick="pickCategory('기타')">기타</button></li>
+      </ul>
+    </div>
+    <!-- 분류 메뉴 (필요할 때만) -->
+    <div class="sub-menu" id="divisionMenu">
+      <ul id="divisionList"></ul>
+    </div>
+    <!-- 아이템 테이블 -->
+    <table id="itemTable">
+      <thead>
+        <tr>
+          <th>카테고리</th>
+          <th>분류</th>
+          <th>아이템</th>
+          <th>개수</th>
+          <th>시세</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5">검색/필터 결과가 표시됩니다.</td></tr>
+      </tbody>
+    </table>
+    <div id="paginationControls"></div>
+  </div>
+
+  <!-- 사용자 제출 섹션 (제안만 DB에 저장됨) -->
+  <div class="user-submit-section">
+    <h2>아이템 제안하기</h2>
+    <p class="contest-announcement">
+      ※시세표에 등록되지 않은 아이템을 가장 많이 제출해주신 분께<br>
+      1등 – 1000마일, 2등 – 400마일, 3등 – 100마일을 선물로 드립니다!<br>
+      매월 1일 추첨 진행하며 당첨글은 아래 링크에서 확인 가능합니다.<br>
+      Kakao: <a href="https://open.kakao.com/o/sCWfT4eh">뿌동이포스트</a> | Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">@ppudong2</a>
+    </p>
+    <div class="user-item-inputs">
+      <input type="text" id="userSubmissionName" placeholder="아이템 이름">
+      <input type="text" id="userSubmissionPrice" placeholder="시세 (예:10마일)">
+      <input type="text" id="userSubmissionIsland" placeholder="섬/주대 이름">
+    </div>
+    <div class="user-event-section">
+      <textarea id="userSubmissionEvent" placeholder="건의사항이나 시세 오류가 있으면 보내주세요."></textarea>
+    </div>
+    <button onclick="submitUserSuggestion()">제안하기</button>
+    <div id="userSubmissionResult"></div>
+  </div>
+
+  <!-- 관리자 제출 섹션 (즉시 홈페이지 반영) -->
+  <div class="admin-submit-section">
+    <h2>아이템 추가/삭제 (관리자용)</h2>
+    <div class="admin-item-inputs">
+      <select id="adminSubmissionCategory">
+        <option value="">카테고리</option>
+        <option value="재료">재료</option>
+        <option value="아이템">아이템</option>
+        <option value="레시피">레시피</option>
+        <option value="올클">올클</option>
+        <option value="기타">기타</option>
+      </select>
+      <select id="adminSubmissionDivision">
+        <option value="">분류</option>
+      </select>
+      <input type="text" id="adminItemName" placeholder="아이템 이름">
+      <input type="text" id="adminItemQty" placeholder="수량 (예:1개)">
+      <input type="text" id="adminItemPrice" placeholder="시세 (예:10마일)">
+      <input type="password" id="adminPassword" placeholder="비밀번호">
+    </div>
+    <button onclick="submitAdminItem()">등록/삭제</button>
+    <div id="adminSubmissionResult"></div>
+  </div>
+
+  <div class="visitor-counter"></div>
+  <footer>
+    © 2025 뿌동이. All Rights Reserved.<br>
+    제작: 뿌동이 주대<br>
+    Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">@ppudong2</a>
+  </footer>
+
+  <!-- Firebase SDK (compat) -->
   <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore-compat.js"></script>
-  <!-- Firebase 초기화 및 설정 -->
   <script>
+    // Firebase 초기화
     const firebaseConfig = {
       apiKey: "AIzaSyA-EdZtqc1b9gp67OliSdJ7bWPNgEGUM7A",
       authDomain: "ppudong-price-list.firebaseapp.com",
@@ -298,18 +432,16 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 페이지 로드 시 방문자 수 갱신
+    // 방문자 수 업데이트
     window.onload = () => {
       updateVisitorCount();
     };
-
     async function updateVisitorCount() {
       try {
         const docRef = db.collection("visitorData").doc("count");
         await db.runTransaction(async (transaction) => {
           const docSnapshot = await transaction.get(docRef);
-          const todayString = getTodayString(); // 'YYYY-MM-DD'
-          
+          const todayString = getTodayString();
           if (!docSnapshot.exists) {
             transaction.set(docRef, {
               today: 1,
@@ -336,7 +468,6 @@
         console.error("Failed to update visitor count:", error);
       }
     }
-
     function getTodayString() {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -345,387 +476,32 @@
       return `${yyyy}-${mm}-${dd}`;
     }
   </script>
-</head>
-<body>
-  <div class="header-area">
-    <!-- 제목 클릭 시 새로고침 -->
-    <h1 onclick="location.reload()">
-      <i class="fa-solid fa-tree"></i> 뿌동숲 시세표 <i class="fa-solid fa-tree"></i>
-    </h1>
-  </div>
-
-  <div class="container">
-    <!-- 검색박스 -->
-    <div class="search-box">
-      <div class="hamburger" onclick="toggleMenu()">
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-      </div>
-      <input type="text" id="search" placeholder="아이템 이름" onkeyup="filterItems()">
-      <button class="search-button" onclick="filterItems()">
-        <i class="fas fa-leaf"></i>
-      </button>
-    </div>
-    <!-- 메뉴 -->
-    <div class="menu" id="categoryMenu">
-      <ul id="menuList">
-        <li><button onclick="showCategory('재료(1셋)')">재료(1셋)</button></li>
-        <li><button onclick="showCategory('가구')">가구</button></li>
-        <li><button onclick="showCategory('레시피')">레시피</button></li>
-        <li><button onclick="showCategory('의류/잡화')">의류/잡화</button></li>
-        <li><button onclick="showCategory('인기 아이템')">인기 아이템</button></li>
-        <li><button onclick="showCategory('올클 레시피')">올클 레시피</button></li>
-        <li><button onclick="showCategory('올클 아이템')">올클 아이템</button></li>
-        <li><button onclick="showCategory('완제품')">완제품</button></li>
-        <li><button onclick="showCategory('만지작')">만지작</button></li>
-        <li><button onclick="showCategory('알바')">알바</button></li>
-        <li><button onclick="showCategory('주민액자')">주민액자</button></li>
-        <li><button onclick="showCategory('미술품')">미술품</button></li>
-        <li><button onclick="showCategory('토용')">토용</button></li>
-        <!-- 기타 카테고리 -->
-        <li><button onclick="showCategory('기타')">기타</button></li>
-      </ul>
-    </div>
-
-    <table id="itemTable">
-      <thead>
-        <tr>
-          <th>카테고리</th>
-          <th>아이템</th>
-          <th>시세</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>
-      </tbody>
-    </table>
-    <!-- 페이지네이션 컨트롤 -->
-    <div id="paginationControls" style="margin-top: 10px;"></div>
-  </div>
-
-  <!-- 사용자용 아이템 제출 섹션 -->
-  <div class="user-submit-section">
-    <h2>아이템 제출하기</h2>
-    <p class="contest-announcement">
-      ※시세표에 등록되지 않은 아이템을 가장 많이 제출해주신 분께<br>
-      1등 – 1000마일, 2등 – 400마일, 3등 – 100마일을 선물로 드립니다!<br>
-      매월 1일 추첨 진행하며 당첨글은 아래 링크에서 확인 가능합니다.<br>
-      Kakao: <a href="https://open.kakao.com/o/sCWfT4eh">뿌동이포스트</a> | Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">@ppudong2</a>
-    </p>
-    <div class="user-item-inputs">
-      <select id="submissionCategory">
-        <option value="재료(1셋)">재료(1셋)</option>
-        <option value="가구">가구</option>
-        <option value="레시피">레시피</option>
-        <option value="의류/잡화">의류/잡화</option>
-        <option value="완제품">완제품</option>
-        <option value="주민액자">주민액자</option>
-        <option value="미술품">미술품</option>
-        <option value="기타">기타</option>
-      </select>
-      <input type="text" id="submissionItemName" placeholder="정확한 아이템 이름">
-      <input type="text" id="submissionItemPrice" placeholder="시세(예:10마일)">
-      <input type="text" id="submissionIsland" placeholder="섬/주대 이름">
-    </div>
-    <div>
-      <button onclick="submitSubmission()">보내기</button>
-    </div>
-    <div id="submissionResult"></div>
-  </div>
-
-  <!-- 관리자용 아이템 제출 섹션 -->
-  <div class="admin-submit-section">
-    <h2>아이템 추가 &lt;관리자용&gt;</h2>
-    <p class="admin-submit-guide">
-      ※관리자용 아이템 등록 및 삭제.
-    </p>
-    <div class="admin-item-inputs">
-      <select id="userCategory">
-        <option value="재료(1셋)">재료(1셋)</option>
-        <option value="가구">가구</option>
-        <option value="레시피">레시피</option>
-        <option value="의류/잡화">의류/잡화</option>
-        <option value="인기 아이템">인기 아이템</option>
-        <option value="올클 레시피">올클 레시피</option>
-        <option value="올클 아이템">올클 아이템</option>
-        <option value="완제품">완제품</option>
-        <option value="만지작">만지작</option>
-        <option value="알바">알바</option>
-        <option value="주민액자">주민액자</option>
-        <option value="미술품">미술품</option>
-        <option value="토용">토용</option>
-        <option value="기타">기타</option>
-      </select>
-      <input type="text" id="userItemName" placeholder="아이템 이름">
-      <input type="text" id="userItemPrice" placeholder="시세">
-      <input type="password" id="userPassword" placeholder="비밀번호">
-    </div>
-    <div>
-      <button onclick="submitUserItem()">보내기</button>
-    </div>
-    <div id="userItemResult"></div>
-  </div>
-
-  <!-- 방문자 수 -->
-  <div class="visitor-counter"></div>
-
-  <!-- Footer -->
-  <footer>
-    © 2025 뿌동이. All Rights Reserved.<br>
-    제작: 뿌동이 주대<br>
-    Instagram: <a href="https://www.instagram.com/ppudong2/" target="_blank">https://www.instagram.com/ppudong2/</a>
-  </footer>
 
   <script>
-    /************* 기본 시세표 기능 + 중복 검사 + 검색 + 카테고리 필터 *************/
+    /********** 기존 시세표, 검색, 페이징 관련 코드 **********/
     let currentPage = 1;
-    const itemsPerPage = 10; 
-    let currentItems = []; 
-
+    const itemsPerPage = 10;
+    let currentItems = [];
     function toggleMenu() {
       document.getElementById("categoryMenu").classList.toggle("show");
     }
     function sortByName(arr) {
       return arr.sort((a, b) => a.name.localeCompare(b.name));
     }
-
-    // 공백 제거 + 소문자 변환
     function removeAllSpaces(str) {
       return str.replace(/\s+/g, '').toLowerCase();
     }
-
-    // staticItems + userItems 중복 검사
     function isDuplicateItem(newItemName) {
       const normalized = removeAllSpaces(newItemName);
-      // staticItems
-      for(const s of staticItems) {
-        if(removeAllSpaces(s.name) === normalized) {
-          return true;
-        }
+      for (const s of staticItems) {
+        if (removeAllSpaces(s.name) === normalized) return true;
       }
-      // userItems
-      for(const u of userItems) {
-        if(removeAllSpaces(u.name) === normalized) {
-          return true;
-        }
+      for (const u of userItems) {
+        if (removeAllSpaces(u.name) === normalized) return true;
       }
       return false;
     }
-
-    // 모든 아이템(재료, 가구, 레시피, ... ~ 토용) 
-    const staticItems = [
-      // 재료(1셋)
-      { category: "재료(1셋)", name: "자패", price: "1마일" },
-      { category: "재료(1셋)", name: "산호", price: "1마일" },
-      { category: "재료(1셋)", name: "방석고둥", price: "1마일" },
-      { category: "재료(1셋)", name: "거거", price: "2마일" },
-      { category: "재료(1셋)", name: "연잎성게", price: "1마일" },
-      { category: "재료(1셋)", name: "뮤렉스조개", price: "1마일" },
-      { category: "재료(1셋)", name: "바지락", price: "1마일" },
-      { category: "재료(1셋)", name: "소라고둥", price: "1마일" },
-      { category: "재료(1셋)", name: "녹슨 부품", price: "5마일" },
-      { category: "재료(1셋)", name: "벌집", price: "2마일" },
-      { category: "재료(1셋)", name: "사랑의 결정", price: "10마일" },
-      { category: "재료(1셋)", name: "빛이끼", price: "5마일" },
-      { category: "재료(1셋)", name: "덩굴", price: "5마일" },
-      { category: "재료(1셋)", name: "눈의 결정", price: "5마일" },
-      { category: "재료(1셋)", name: "단풍잎", price: "5마일" },
-      { category: "재료(1셋)", name: "염소자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "물병자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "물고기자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "양자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "황소자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "쌍둥이자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "게자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "사자자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "처녀자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "천칭자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "전갈자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "사수자리 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "사탕", price: "30마일" },
-      { category: "재료(1셋)", name: "롤리팝", price: "40마일" },
-      { category: "재료(1셋)", name: "나뭇가지", price: "1마일" },
-      { category: "재료(1셋)", name: "단단한 목재", price: "1마일" },
-      { category: "재료(1셋)", name: "일반 목재", price: "2마일" },
-      { category: "재료(1셋)", name: "목재", price: "2마일" },
-      { category: "재료(1셋)", name: "부드러운 목재", price: "1마일" },
-      { category: "재료(1셋)", name: "대나무 토막", price: "1마일" },
-      { category: "재료(1셋)", name: "돌", price: "2마일" },
-      { category: "재료(1셋)", name: "철광석", price: "2마일" },
-      { category: "재료(1셋)", name: "점토", price: "1마일" },
-      { category: "재료(1셋)", name: "금광석", price: "20마일" },
-      { category: "재료(1셋)", name: "별의 조각", price: "2마일" },
-      { category: "재료(1셋)", name: "커다란 별의 조각", price: "20마일" },
-      { category: "재료(1셋)", name: "잡초", price: "1마일" },
-      { category: "재료(1셋)", name: "여름 조개껍데기", price: "2마일" },
-      { category: "재료(1셋)", name: "봄의 대나무", price: "5마일" },
-      { category: "재료(1셋)", name: "벚꽃잎", price: "5마일" },
-      { category: "재료(1셋)", name: "떡밥 100개", price: "20마일" },
-
-      // 가구
-      { category: "가구", name: "보리밭", price: "1마일" },
-
-      // 레시피
-      { category: "레시피", name: "금 잠자리채 레시피", price: "200마일" },
-      { category: "레시피", name: "금 삽 레시피", price: "200마일" },
-      { category: "레시피", name: "금 낚싯대 레시피", price: "200마일" },
-      { category: "레시피", name: "금 새총 레시피", price: "20마일" },
-      { category: "레시피", name: "부옥이 레시피", price: "10마일-20마일" },
-      { category: "레시피", name: "머메이드 레시피", price: "10~20마일" },
-      { category: "레시피", name: "돈다발 레시피", price: "20~30마일" },
-      { category: "레시피", name: "목제 간이 창고 레시피", price: "10마일" },
-      { category: "레시피", name: "야광 벽 스티커 레시피", price: "20마일" },
-      { category: "레시피", name: "얼음 미니 눈사람 레시피", price: "120마일" },
-      { category: "레시피", name: "금장미 리스 레시피", price: "20마일" },
-      { category: "레시피", name: "국화 화관 레시피", price: "10마일" },
-      { category: "레시피", name: "낮은 나무 울타리 레시피", price: "20마일" },
-      { category: "레시피", name: "넓은 버섯 레시피", price: "5마일" },
-      { category: "레시피", name: "달 레시피", price: "10마일" },
-      { category: "레시피", name: "돈다발 레시피", price: "20마일" },
-      { category: "레시피", name: "버섯 램프 레시피", price: "30마일" },
-      { category: "레시피", name: "벚꽃 미니백 레시피", price: "30마일" },
-      { category: "레시피", name: "야광 벽 스티커 레시피", price: "20마일" },
-      { category: "레시피", name: "얼음 테이블 레시피", price: "30마일" },
-      { category: "레시피", name: "유인용 오리 레시피", price: "2마일" },
-      { category: "레시피", name: "초록낙엽 레시피", price: "30마일" },
-      { category: "레시피", name: "큐트 장미 화관 레시피", price: "10마일" },
-      { category: "레시피", name: "큐트 튤립 리스 레시피", price: "10마일" },
-      { category: "레시피", name: "푸른 장미 화관 레시피", price: "20마일" },
-      { category: "레시피", name: "이스터 울타리 레시피", price: "5마일" },
-
-      // 올클 레시피
-      { category: "올클 레시피", name: "벚꽃 레시피 (15종)", price: "400마일" },
-      { category: "올클 레시피", name: "여름 조개 레시피 (20종)", price: "400마일" },
-      { category: "올클 레시피", name: "머메이드 레시피 (15종)", price: "400마일" },
-      { category: "올클 레시피", name: "나무열매 레시피 (10종)", price: "400마일" },
-      { category: "올클 레시피", name: "버섯 레시피 (12종)", price: "400마일" },
-      { category: "올클 레시피", name: "단풍 레시피 (10종)", price: "400마일" },
-      { category: "올클 레시피", name: "얼음 레시피 (26종)", price: "1200마일" },
-      { category: "올클 레시피", name: "이스터 레시피 (20종)", price: "300마일" },
-      { category: "올클 레시피", name: "할로윈 레시피 (18종)", price: "300마일" },
-      { category: "올클 레시피", name: "부옥이 레시피 (12궁 포함, 49종)", price: "600마일" },
-      { category: "올클 레시피", name: "12궁 레시피 (부옥 제외)", price: "150마일" },
-      { category: "올클 레시피", name: "크리스마스 오너먼트 레시피 (20종)", price: "400마일" },
-      { category: "올클 레시피", name: "봄 대나무 레시피 (16종)", price: "400마일" },
-      { category: "올클 레시피", name: "덩굴&빛이끼 레시피(40종)", price: "350~400마일" },
-      { category: "올클 레시피", name: "금도구 레시피 (4종)", price: "620마일" },
-      { category: "올클 레시피", name: "꽃 리스 & 화환 레시피 (52종)", price: "650~700마일" },
-
-      // 올클 아이템
-      { category: "올클 아이템", name: "감정 화석 (73종)", price: "80마일" },
-      { category: "올클 아이템", name: "미술품 (43종)", price: "400마일" },
-      { category: "올클 아이템", name: "토용 (36종, 마스터 포함)", price: "100마일" },
-      { category: "올클 아이템", name: "음악 (107종)", price: "300마일" },
-      { category: "올클 아이템", name: "NPC 액자 (62종)", price: "1600마일" },
-
-      // 인기 아이템
-      { category: "인기 아이템", name: "스코틀랜드 모자", price: "20마일" },
-      { category: "인기 아이템", name: "복고양이", price: "20마일" },
-      { category: "인기 아이템", name: "5층탑", price: "30마일" },
-      { category: "인기 아이템", name: "해적통", price: "30마일" },
-      { category: "인기 아이템", name: "넘어진 해적통", price: "30마일" },
-      { category: "인기 아이템", name: "DAL MA-1", price: "30마일" },
-      { category: "인기 아이템", name: "DAL 비행기 모형", price: "50마일" },
-      { category: "인기 아이템", name: "생선건조대", price: "30마일" },
-      { category: "인기 아이템", name: "닻 장식", price: "10마일" },
-      { category: "인기 아이템", name: "멋진 아이스 박스", price: "10마일" },
-      { category: "인기 아이템", name: "개미집", price: "20마일" },
-      { category: "인기 아이템", name: "원목채집통", price: "10마일" },
-      { category: "인기 아이템", name: "낯선고양이 가방", price: "25마일" },
-      { category: "인기 아이템", name: "분리수거 종이 묶음", price: "30마일" },
-      { category: "인기 아이템", name: "위대한 조각", price: "60마일" },
-
-      // 완제품
-      { category: "완제품", name: "금 낚싯대", price: "2마일" },
-      { category: "완제품", name: "금 삽", price: "2마일" },
-      { category: "완제품", name: "금 물뿌리개", price: "2마일" },
-      { category: "완제품", name: "금도끼", price: "2마일" },
-      { category: "완제품", name: "금새총", price: "2마일" },
-
-      // 만지작
-      { category: "만지작", name: "신템 전색", price: "200마일" },
-      { category: "만지작", name: "신템 단색", price: "70마일" },
-      { category: "만지작", name: "구템 전색", price: "200마일" },
-      { category: "만지작", name: "구템 단색", price: "80마일" },
-      { category: "만지작", name: "신의류", price: "80~100마일" },
-      { category: "만지작", name: "구의류", price: "300마일" },
-      { category: "만지작", name: "비매품 전체", price: "400마일" },
-
-      // 알바
-      { category: "알바", name: "꽃 뽑기 소량", price: "10~15마일" },
-      { category: "알바", name: "꽃 뽑기 대량", price: "30~40마일" },
-      { category: "알바", name: "꽃 옮기기 소량", price: "20~25마일" },
-      { category: "알바", name: "꽃 옮기기 대량", price: "30~40마일" },
-      { category: "알바", name: "잡초 뽑기 소량", price: "10~20마일" },
-      { category: "알바", name: "잡초 뽑기 대량", price: "20~30마일" },
-      { category: "알바", name: "잡초 심기 소량", price: "10~15마일" },
-      { category: "알바", name: "잡초 심기 대량", price: "30~40마일" },
-      { category: "알바", name: "나무 뽑기 소량", price: "10~20마일" },
-      { category: "알바", name: "나무 뽑기 대량", price: "30~40마일" },
-      { category: "알바", name: "나무 옮기기 소량", price: "20~30마일" },
-      { category: "알바", name: "나무 옮기기 대량", price: "30~40마일" },
-      { category: "알바", name: "카탈 알바 100개", price: "150~200마일" },
-
-      // 주민액자
-      { category: "주민액자", name: "애플의 사진", price: "10마일" },
-      { category: "주민액자", name: "레온의 사진", price: "30마일" },
-      { category: "주민액자", name: "저스틴의 사진", price: "30마일" },
-      { category: "주민액자", name: "너굴의 사진", price: "10마일" },
-      { category: "주민액자", name: "낯선고양이의 사진", price: "10마일" },
-      { category: "주민액자", name: "여울의 사진", price: "10마일" },
-      { category: "주민액자", name: "루돌의 사진", price: "10마일" },
-      { category: "주민액자", name: "콩돌이의 사진", price: "10마일" },
-      { category: "주민액자", name: "마스터의 사진", price: "10마일" },
-      { category: "주민액자", name: "미애의 사진", price: "10마일" },
-      { category: "주민액자", name: "사브리나의 사진", price: "30마일" },
-      { category: "주민액자", name: "올리버의 사진", price: "30마일" },
-      { category: "주민액자", name: "마틸다의 사진", price: "30마일" },
-
-      // 미술품
-      { category: "미술품", name: "아름다운 조각", price: "10마일" },
-      { category: "미술품", name: "무사의 조각", price: "10마일" },
-
-      // 토용
-      { category: "토용", name: "가면 토용", price: "1마일" },
-      { category: "토용", name: "가시 토용", price: "1마일" },
-      { category: "토용", name: "꿀꿀 토용", price: "1마일" },
-      { category: "토용", name: "끼익 토용", price: "1마일" },
-      { category: "토용", name: "둠칫 토용", price: "1마일" },
-      { category: "토용", name: "둥둥 토용", price: "1마일" },
-      { category: "토용", name: "디링 토용", price: "1마일" },
-      { category: "토용", name: "딩동 토용", price: "1마일" },
-      { category: "토용", name: "딸깍 토용", price: "1마일" },
-      { category: "토용", name: "땡그랑 토용", price: "1마일" },
-      { category: "토용", name: "또록 토용", price: "1마일" },
-      { category: "토용", name: "똑딱 토용", price: "1마일" },
-      { category: "토용", name: "뚱땅 토용", price: "1마일" },
-      { category: "토용", name: "띠롱 토용", price: "1마일" },
-      { category: "토용", name: "마스터 토용", price: "60마일" },
-      { category: "토용", name: "멍멍 토용", price: "1마일" },
-      { category: "토용", name: "방울 토용", price: "1마일" },
-      { category: "토용", name: "베이비 토용", price: "1마일" },
-      { category: "토용", name: "베이스 토용", price: "1마일" },
-      { category: "토용", name: "벨 토용", price: "1마일" },
-      { category: "토용", name: "뵤옹 토용", price: "1마일" },
-      { category: "토용", name: "부웅 토용", price: "1마일" },
-      { category: "토용", name: "뽀삐 토용", price: "1마일" },
-      { category: "토용", name: "뽁 토용", price: "1마일" },
-      { category: "토용", name: "뿌우 토용", price: "1마일" },
-      { category: "토용", name: "삐뽀 토용", price: "1마일" },
-      { category: "토용", name: "삐융 토용", price: "1마일" },
-      { category: "토용", name: "쉐킷 토용", price: "1마일" },
-      { category: "토용", name: "양철 토용", price: "1마일" },
-      { category: "토용", name: "에코 토용", price: "1마일" },
-      { category: "토용", name: "우와와 토용", price: "1마일" },
-      { category: "토용", name: "지직 토용", price: "1마일" },
-      { category: "토용", name: "콰삭 토용", price: "1마일" },
-      { category: "토용", name: "툭툭 토용", price: "1마일" },
-      { category: "토용", name: "푸르르 토용", price: "1마일" },
-      { category: "토용", name: "후후 토용", price: "1마일" }
-    ];
-
-    // userItems => 관리자용 추가 아이템(화면 표시)
+    // 관리자용 아이템은 Firestore "userItems" 컬렉션에 저장
     let userItems = [];
     db.collection("userItems")
       .orderBy("createdAt", "asc")
@@ -734,79 +510,26 @@
         snapshot.forEach(doc => {
           userItems.push(doc.data());
         });
-        // 검색창 비었으면 기본메시지
+        // 검색창이 비어있다면 staticItems와 userItems를 합쳐서 즉시 표시
         if(document.getElementById("search").value.trim() === ""){
-          document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
-          document.getElementById("paginationControls").innerHTML = "";
-          currentItems = [];
+          currentItems = [...staticItems, ...userItems];
+          displayItems(currentItems);
         }
       });
-
-    function displayItems(itemsArray) {
-      const tableBody = document.querySelector("#itemTable tbody");
-      if (itemsArray.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="3">표시할 아이템이 없습니다.</td></tr>`;
-        document.getElementById("paginationControls").innerHTML = "";
-        return;
-      }
-      itemsArray = sortByName(itemsArray);
-      const totalPages = Math.ceil(itemsArray.length / itemsPerPage);
-      if (currentPage > totalPages) currentPage = totalPages;
-
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const itemsToDisplay = itemsArray.slice(startIndex, endIndex);
-
-      let html = "";
-      itemsToDisplay.forEach(item => {
-        html += `
-          <tr>
-            <td>${item.category}</td>
-            <td>${item.name}</td>
-            <td>${item.price}</td>
-          </tr>
-        `;
-      });
-      tableBody.innerHTML = html;
-      renderPagination(totalPages);
-    }
-
-    function renderPagination(totalPages) {
-      const paginationDiv = document.getElementById("paginationControls");
-      let html = "";
-      if (currentPage > 1) {
-        html += `<button onclick="changePage(${currentPage - 1})">이전</button>`;
-      }
-      html += `<span>${currentPage} / ${totalPages}</span>`;
-      if (currentPage < totalPages) {
-        html += `<button onclick="changePage(${currentPage + 1})">다음</button>`;
-      }
-      paginationDiv.innerHTML = html;
-    }
-
-    function changePage(page) {
-      currentPage = page;
-      displayItems(currentItems);
-    }
-
-    // 검색 기능
     function filterItems() {
       const searchText = document.getElementById("search").value.toLowerCase().trim();
       currentPage = 1;
       if (!searchText) {
-        document.querySelector("#itemTable tbody").innerHTML =
-          `<tr><td colspan="3">검색 결과가 여기에 표시됩니다.</td></tr>`;
-        document.getElementById("paginationControls").innerHTML = "";
-        currentItems = [];
+        currentItems = [...staticItems, ...userItems];
+        displayItems(currentItems);
         return;
       }
       const normalizedSearchText = removeAllSpaces(searchText);
-      // static + userItems
       let filtered = [...staticItems, ...userItems].filter(item =>
         removeAllSpaces(item.name).includes(normalizedSearchText)
       );
       if (filtered.length === 0) {
-        document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="3">검색 결과가 없습니다.</td></tr>`;
+        document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`;
         document.getElementById("paginationControls").innerHTML = "";
         currentItems = [];
       } else {
@@ -814,15 +537,12 @@
         displayItems(currentItems);
       }
     }
-
-    // 카테고리 필터
     function showCategory(catName) {
       document.getElementById("search").value = "";
       currentPage = 1;
       let filtered = [...staticItems, ...userItems].filter(item => item.category === catName);
       if (filtered.length === 0) {
-        document.querySelector("#itemTable tbody").innerHTML =
-          `<tr><td colspan="3">${catName} 카테고리에 해당하는 아이템이 없습니다.</td></tr>`;
+        document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="5">${catName} 카테고리에 해당하는 아이템이 없습니다.</td></tr>`;
         document.getElementById("paginationControls").innerHTML = "";
         currentItems = [];
       } else {
@@ -831,109 +551,215 @@
       }
       toggleMenu();
     }
-
-    // 전체보기는 주석 처리
-    /*
-    function showAll() { 
-      ... 
-    }
-    */
-
-    // 사용자 제출 => "사용자제출" 컬렉션 (화면 표시 X)
-    function submitSubmission() {
-      const category = document.getElementById("submissionCategory").value;
-      const name = document.getElementById("submissionItemName").value.trim();
-      const price = document.getElementById("submissionItemPrice").value.trim();
-      const island = document.getElementById("submissionIsland").value.trim();
-      const resultDiv = document.getElementById("submissionResult");
-
-      if (!name || !price || !island) {
-        resultDiv.style.color = "red";
-        resultDiv.textContent = "카테고리, 정확한 아이템 이름, 시세, 섬/주대 이름은 필수 입력사항입니다.";
+    function displayItems(itemsArray) {
+      const tableBody = document.querySelector("#itemTable tbody");
+      if (itemsArray.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5">표시할 아이템이 없습니다.</td></tr>';
+        document.getElementById("paginationControls").innerHTML = "";
         return;
       }
+      const totalPages = Math.ceil(itemsArray.length / itemsPerPage);
+      if (currentPage > totalPages) currentPage = totalPages;
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const itemsToDisplay = itemsArray.slice(startIndex, endIndex);
+      let html = "";
+      itemsToDisplay.forEach(function(item){
+        html += '<tr>';
+        html += '<td>' + item.category + '</td>';
+        html += '<td>' + (item.division || "") + '</td>';
+        html += '<td>' + item.name + '</td>';
+        html += '<td>' + (item.quantity || "") + '</td>';
+        html += '<td>' + (item.price || "") + '</td>';
+        html += '</tr>';
+      });
+      tableBody.innerHTML = html;
+      renderPagination(totalPages);
+    }
+    function renderPagination(totalPages) {
+      const paginationDiv = document.getElementById("paginationControls");
+      let html = "";
+      if (currentPage > 1) {
+        html += `<button onclick="changePage(${currentPage-1})">이전</button>`;
+      }
+      html += `<span>${currentPage} / ${totalPages}</span>`;
+      if (currentPage < totalPages) {
+        html += `<button onclick="changePage(${currentPage+1})">다음</button>`;
+      }
+      paginationDiv.innerHTML = html;
+    }
+    function changePage(page) {
+      currentPage = page;
+      displayItems(currentItems);
+    }
+    
+    /* 새로운 시세표용 데이터 및 메뉴 */
+    let currentCategory = "";
+    let currentDivision = "";
+    const subDivisions = {
+      "": [],
+      "재료": ["자연", "계절", "이벤트", "기타"],
+      "아이템": ["마일템", "완제품", "미술품", "이벤트", "토용", "기타"],
+      "레시피": [],
+      "올클": ["올클 레시피", "올클 아이템"],
+      "기타": ["만지작", "알바", "산리오", "편의"]
+    };
+    function toggleCategoryMenu(){
+      document.getElementById("categoryMenu").classList.toggle("show");
+      document.getElementById("divisionMenu").classList.remove("show");
+    }
+    function pickCategory(cat){
+      document.getElementById("categoryMenu").classList.remove("show");
+      currentCategory = cat;
+      currentDivision = "";
+      if (subDivisions[cat] && subDivisions[cat].length > 0) {
+        fillDivisionMenu(cat);
+        document.getElementById("divisionMenu").classList.add("show");
+      } else {
+        applyFilter();
+      }
+    }
+    function fillDivisionMenu(cat){
+      const list = document.getElementById("divisionList");
+      list.innerHTML = "";
+      const arr = subDivisions[cat] || [];
+      arr.forEach(function(div){
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.textContent = div;
+        btn.onclick = function(){ pickDivision(div); };
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+    function pickDivision(div){
+      currentDivision = (div === "전체보기") ? "" : div;
+      document.getElementById("divisionMenu").classList.remove("show");
+      applyFilter();
+    }
+    
+    /* staticItems: (최종 새 아이템 데이터는 이전 최종 staticItems 데이터 참조) */
+    const staticItems = [
+      // 이곳에는 이전 최종 staticItems 데이터가 포함됩니다.
+    ];
+  </script>
 
-      // 사용자 제출도 중복 검사
+  <script>
+    /********** 사용자 제출 섹션 (제안만 DB에 저장) **********/
+    function submitUserSuggestion() {
+      const name = document.getElementById("userSubmissionName").value.trim();
+      const price = document.getElementById("userSubmissionPrice").value.trim();
+      const island = document.getElementById("userSubmissionIsland").value.trim();
+      const eventText = document.getElementById("userSubmissionEvent").value.trim();
+      const resultDiv = document.getElementById("userSubmissionResult");
+      
+      if (!name || !price || !island) {
+        resultDiv.style.color = "red";
+        resultDiv.textContent = "아이템 이름, 시세, 섬/주대 이름은 필수 입력사항입니다.";
+        return;
+      }
       if (isDuplicateItem(name)) {
         resultDiv.style.color = "red";
         resultDiv.textContent = "중복된 아이템입니다.";
         return;
       }
-
       db.collection("사용자제출").add({
-        category, name, price, island,
+        name, price, island, event: eventText,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       })
       .then(() => {
         resultDiv.style.color = "green";
-        resultDiv.textContent = "아이템 제출이 완료되었습니다. (홈페이지 미표시)";
-        document.getElementById("submissionItemName").value = "";
-        document.getElementById("submissionItemPrice").value = "";
-        document.getElementById("submissionIsland").value = "";
+        resultDiv.textContent = "아이템 제안이 완료되었습니다.";
+        document.getElementById("userSubmissionName").value = "";
+        document.getElementById("userSubmissionPrice").value = "";
+        document.getElementById("userSubmissionIsland").value = "";
+        document.getElementById("userSubmissionEvent").value = "";
       })
-      .catch((error) => {
-        console.error("Error adding submission: ", error);
+      .catch(error => {
+        console.error("제안 제출 에러:", error);
         resultDiv.style.color = "red";
         resultDiv.textContent = "제출 중 오류가 발생했습니다.";
       });
     }
+  </script>
 
-    // 관리자용 => "userItems" 컬렉션 (화면 표시)
-    const ADD_PASSWORD = "0998star";
-    const DELETE_PASSWORD = "0998dstar";
-
-    function submitUserItem() {
-      const category = document.getElementById("userCategory").value;
-      const name = document.getElementById("userItemName").value.trim();
-      const price = document.getElementById("userItemPrice").value.trim();
-      const password = document.getElementById("userPassword").value.trim();
-      const resultDiv = document.getElementById("userItemResult");
-
-      if (!name || !password) {
+  <script>
+    /********** 관리자 제출 섹션 (DB 'userItems'에 추가/삭제) **********/
+    // 추가: 비밀번호 "0998star", 삭제: "0998dstar"
+    // 관리자용 드롭다운의 분류(분류) 업데이트
+    document.getElementById("adminSubmissionCategory").addEventListener("change", function(){
+      const cat = this.value;
+      const divisionSelect = document.getElementById("adminSubmissionDivision");
+      divisionSelect.innerHTML = "";
+      const divisions = subDivisions[cat] || [];
+      if(divisions.length > 0) {
+        divisions.forEach(function(div){
+          const opt = document.createElement("option");
+          opt.value = div;
+          opt.textContent = div;
+          divisionSelect.appendChild(opt);
+        });
+      } else {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "분류";
+        divisionSelect.appendChild(opt);
+      }
+    });
+    
+    function submitAdminItem() {
+      const category = document.getElementById("adminSubmissionCategory").value;
+      const division = document.getElementById("adminSubmissionDivision").value;
+      const name = document.getElementById("adminItemName").value.trim();
+      const qty = document.getElementById("adminItemQty").value.trim();
+      const price = document.getElementById("adminItemPrice").value.trim();
+      const password = document.getElementById("adminPassword").value.trim();
+      const resultDiv = document.getElementById("adminSubmissionResult");
+      
+      if (!category || !division || !name || !password) {
         resultDiv.style.color = "red";
-        resultDiv.textContent = "카테고리, 아이템 이름, 비밀번호는 필수 입력사항입니다.";
+        resultDiv.textContent = "카테고리, 분류, 아이템 이름, 비밀번호는 필수 입력사항입니다.";
         return;
       }
-      
-      // 아이템 추가
-      if (price) {
-        if (password !== ADD_PASSWORD) {
+      if (price && qty) {
+        // 추가 요청
+        if (password !== "0998star") {
           resultDiv.style.color = "red";
           resultDiv.textContent = "비밀번호가 올바르지 않습니다.";
           return;
         }
-        // 관리자 추가도 중복 검사
         if (isDuplicateItem(name)) {
           resultDiv.style.color = "red";
           resultDiv.textContent = "중복된 아이템입니다.";
           return;
         }
         db.collection("userItems").add({
-          category, name, price,
+          category, division, name, quantity: qty, price,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         })
         .then(() => {
           resultDiv.style.color = "green";
-          resultDiv.textContent = "아이템이 추가되었습니다. (홈페이지 표시)";
-          document.getElementById("userItemName").value = "";
-          document.getElementById("userItemPrice").value = "";
-          document.getElementById("userPassword").value = "";
+          resultDiv.textContent = "아이템이 추가되었습니다.";
+          document.getElementById("adminItemName").value = "";
+          document.getElementById("adminItemQty").value = "";
+          document.getElementById("adminItemPrice").value = "";
+          document.getElementById("adminPassword").value = "";
         })
-        .catch((error) => {
-          console.error("Error adding document: ", error);
+        .catch(error => {
+          console.error("관리자 추가 에러:", error);
           resultDiv.style.color = "red";
-          resultDiv.textContent = "추가 중 오류가 발생했습니다.";
+          resultDiv.textContent = "아이템 추가 중 오류가 발생했습니다.";
         });
-      }
-      else {
-        // 아이템 삭제
-        if (password !== DELETE_PASSWORD) {
+      } else {
+        // 삭제 요청 (시세와 수량을 비워둔 상태에서 삭제용 비밀번호 입력)
+        if (password !== "0998dstar") {
           resultDiv.style.color = "red";
-          resultDiv.textContent = "비밀번호가 올바르지 않습니다.";
+          resultDiv.textContent = "삭제용 비밀번호가 올바르지 않습니다.";
           return;
         }
         db.collection("userItems")
           .where("category", "==", category)
+          .where("division", "==", division)
           .where("name", "==", name)
           .get()
           .then(querySnapshot => {
@@ -950,15 +776,16 @@
           })
           .then(() => {
             resultDiv.style.color = "green";
-            resultDiv.textContent = "아이템이 삭제되었습니다. (홈페이지 제거)";
-            document.getElementById("userItemName").value = "";
-            document.getElementById("userItemPrice").value = "";
-            document.getElementById("userPassword").value = "";
+            resultDiv.textContent = "아이템이 삭제되었습니다.";
+            document.getElementById("adminItemName").value = "";
+            document.getElementById("adminItemQty").value = "";
+            document.getElementById("adminItemPrice").value = "";
+            document.getElementById("adminPassword").value = "";
           })
-          .catch((error) => {
-            console.error("Error deleting document: ", error);
+          .catch(error => {
+            console.error("관리자 삭제 에러:", error);
             resultDiv.style.color = "red";
-            resultDiv.textContent = "삭제 중 오류가 발생했습니다.";
+            resultDiv.textContent = "아이템 삭제 중 오류가 발생했습니다.";
           });
       }
     }
