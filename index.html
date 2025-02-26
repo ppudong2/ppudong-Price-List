@@ -91,7 +91,7 @@
     }
     .menu ul {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, 1fr); 
       gap: 10px;
       list-style: none;
       margin: 0;
@@ -275,7 +275,7 @@
       margin-top: 0;
       margin-bottom: 5px;
     }
-    /* 관리자용 입력 필드: 첫 줄에 카테고리와 분류, 두 번째 줄에 아이템/수량/시세/비밀번호 */
+    /* 관리자용 입력 필드: 맨 윗줄에 카테고리와 분류, 그 아래 한 줄에 아이템/수량/시세/비밀번호 */
     .admin-top-row,
     .admin-bottom-row {
       display: flex;
@@ -284,13 +284,9 @@
       gap: 10px;
       margin-bottom: 10px;
     }
-    .admin-bottom-row input,
+    /* 데스크탑 스타일 */
     .admin-top-row select {
-      padding: 8px;
-      border: 2px solid #4caf50;
-      border-radius: 5px;
-      font-size: 0.9em;
-      box-sizing: border-box;
+      width: 40%;
     }
     .admin-bottom-row input#adminItemName {
       width: 20%;
@@ -304,10 +300,7 @@
     .admin-bottom-row input#adminPassword {
       width: 20%;
     }
-    .admin-top-row select {
-      width: 40%;
-    }
-    /* 반응형 디자인 */
+    /* 모바일 스타일: 선택창이 한 줄에 들어가도록 조정 */
     @media screen and (max-width: 600px) {
       .container {
         width: 95%;
@@ -326,11 +319,25 @@
       table, th, td {
         font-size: 0.8em;
       }
-      /* 모바일에서 관리자 제출 섹션: 입력 필드 간격 조정 */
-      .admin-top-row, .admin-bottom-row {
+      /* 모바일에서 사용자 제출 섹션 입력 필드 한 줄 배치 */
+      .user-item-inputs {
+        flex-wrap: nowrap;
+      }
+      .user-item-inputs input {
+        width: 28%;
+      }
+      /* 모바일에서 관리자 제출 섹션: 선택창을 한 줄에 */
+      .admin-top-row {
+        flex-wrap: nowrap;
+      }
+      .admin-top-row select {
+        width: 45%;
+      }
+      /* 모바일에서 관리자 하단 입력란 전체 폭 조정 */
+      .admin-bottom-row {
         flex-wrap: wrap;
       }
-      .admin-bottom-row input, .admin-top-row select {
+      .admin-bottom-row input {
         width: 90%;
         margin-bottom: 5px;
       }
@@ -411,7 +418,7 @@
   <!-- 관리자 제출 섹션 (즉시 홈페이지 반영) -->
   <div class="admin-submit-section">
     <h2>아이템 추가/삭제 (관리자용)</h2>
-    <!-- 첫 번째 줄: 카테고리와 분류 -->
+    <!-- 맨 윗줄: 카테고리와 분류 선택창 -->
     <div class="admin-top-row">
       <select id="adminSubmissionCategory">
         <option value="">카테고리</option>
@@ -425,7 +432,7 @@
         <option value="">분류</option>
       </select>
     </div>
-    <!-- 두 번째 줄: 아이템, 수량, 시세, 비밀번호 -->
+    <!-- 한 줄: 아이템, 수량, 시세, 비밀번호 -->
     <div class="admin-bottom-row">
       <input type="text" id="adminItemName" placeholder="아이템">
       <input type="text" id="adminItemQty" placeholder="수량">
@@ -665,9 +672,9 @@
       applyFilter();
     }
     
-    /* staticItems: (이전 최종 staticItems 데이터가 포함됩니다) */
+    /* staticItems: (최종 staticItems 데이터는 기존 데이터를 참조) */
     const staticItems = [
-      // ... 기존 staticItems 데이터 ...
+      // 이전 최종 staticItems 데이터가 이곳에 포함됩니다.
     ];
   </script>
 
