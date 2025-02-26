@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
   <style>
+    /* 기존 스타일들은 그대로 유지 */
     body {
       font-family: "Jua", sans-serif;
       background-color: #f8f3c8;
@@ -72,8 +73,8 @@
       font-size: 1.5em;
       color: #4caf50;
     }
-    /* 메인 카테고리 메뉴 */
-    .menu {
+    /* 메뉴 및 분류 스타일 */
+    .menu, .sub-menu {
       position: absolute;
       top: 70px;
       left: 20px;
@@ -86,22 +87,22 @@
       display: none;
       z-index: 999;
     }
-    .menu.show {
+    .menu.show, .sub-menu.show {
       display: block;
     }
-    .menu ul {
+    .menu ul, .sub-menu ul {
       display: grid;
-      grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개씩 배치 */
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       list-style: none;
       margin: 0;
       padding: 0;
     }
-    .menu li {
+    .menu li, .sub-menu li {
       display: flex;
       justify-content: center;
     }
-    .menu button {
+    .menu button, .sub-menu button {
       width: 100%;
       height: 40px;
       background: #f8f3c8;
@@ -110,48 +111,7 @@
       cursor: pointer;
       font-size: 0.9em;
     }
-    .menu button:hover {
-      background: #e0dab0;
-    }
-    /* 분류 메뉴 */
-    .sub-menu {
-      position: absolute;
-      top: 70px;
-      left: 20px;
-      background: #fff;
-      border: 2px solid #4caf50;
-      border-radius: 5px;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-      width: 280px;
-      padding: 10px;
-      display: none;
-      z-index: 999;
-    }
-    .sub-menu.show {
-      display: block;
-    }
-    .sub-menu ul {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    .sub-menu li {
-      display: flex;
-      justify-content: center;
-    }
-    .sub-menu button {
-      width: 120px;
-      height: 40px;
-      background: #f8f3c8;
-      border: 2px solid #4caf50;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 0.9em;
-    }
-    .sub-menu button:hover {
+    .menu button:hover, .sub-menu button:hover {
       background: #e0dab0;
     }
     table {
@@ -252,21 +212,21 @@
     .user-item-inputs input#userSubmissionIsland {
       width: 150px;
     }
-    /* 이벤트 작성 영역 수정: 크기 축소 및 가운데 정렬 */
+    /* 이벤트 작성 영역: 높이를 한 줄 크기로 줄임 (30px) */
     .user-event-section {
       margin-top: 10px;
       text-align: center;
     }
     .user-event-section textarea {
       width: 90%;
-      height: 60px;
+      height: 30px;
       margin: 0 auto;
       display: block;
       padding: 8px;
       border: 2px solid #4caf50;
       border-radius: 5px;
       font-size: 0.9em;
-      resize: vertical;
+      resize: none;
     }
     /* 관리자 제출 섹션 */
     .admin-submit-section {
@@ -298,7 +258,6 @@
       border-radius: 5px;
       font-size: 0.9em;
     }
-    /* 관리자 제출 섹션: 첫 번째 드롭다운은 "카테고리", 두 번째는 "분류" */
     .admin-item-inputs input#adminItemName {
       width: 150px;
     }
@@ -310,6 +269,26 @@
     }
     .admin-item-inputs input#adminPassword {
       width: 150px;
+    }
+    /* 반응형 디자인 */
+    @media screen and (max-width: 600px) {
+      .container {
+        width: 95%;
+        padding: 10px;
+      }
+      .search-box input {
+        width: 80%;
+      }
+      .menu, .sub-menu {
+        width: 90%;
+        left: 5%;
+      }
+      .user-submit-section, .admin-submit-section {
+        width: 95%;
+      }
+      table, th, td {
+        font-size: 0.8em;
+      }
     }
   </style>
 </head>
@@ -510,7 +489,6 @@
         snapshot.forEach(doc => {
           userItems.push(doc.data());
         });
-        // 검색창이 비어있다면 staticItems와 userItems를 합쳐서 즉시 표시
         if(document.getElementById("search").value.trim() === ""){
           currentItems = [...staticItems, ...userItems];
           displayItems(currentItems);
@@ -640,7 +618,7 @@
     
     /* staticItems: (최종 새 아이템 데이터는 이전 최종 staticItems 데이터 참조) */
     const staticItems = [
-      // 이곳에는 이전 최종 staticItems 데이터가 포함됩니다.
+      // (이전 최종 staticItems 데이터가 포함됩니다)
     ];
   </script>
 
@@ -686,7 +664,6 @@
   <script>
     /********** 관리자 제출 섹션 (DB 'userItems'에 추가/삭제) **********/
     // 추가: 비밀번호 "0998star", 삭제: "0998dstar"
-    // 관리자용 드롭다운의 분류(분류) 업데이트
     document.getElementById("adminSubmissionCategory").addEventListener("change", function(){
       const cat = this.value;
       const divisionSelect = document.getElementById("adminSubmissionDivision");
@@ -751,7 +728,7 @@
           resultDiv.textContent = "아이템 추가 중 오류가 발생했습니다.";
         });
       } else {
-        // 삭제 요청 (시세와 수량을 비워둔 상태에서 삭제용 비밀번호 입력)
+        // 삭제 요청 (수량, 시세를 비워둔 상태에서 삭제용 비밀번호 입력)
         if (password !== "0998dstar") {
           resultDiv.style.color = "red";
           resultDiv.textContent = "삭제용 비밀번호가 올바르지 않습니다.";
