@@ -202,15 +202,24 @@
     footer a:hover {
       text-decoration: underline;
     }
+    /* 전역 box-sizing 설정 */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
     /* 사용자 제출 섹션 */
     .user-submit-section {
-      margin: 20px auto;
+      width: 100%;
       max-width: 600px;
-      background: #fff;
-      border-radius: 15px;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-      padding: 15px;
-      text-align: center; /* 추가: 내부 내용 중앙 정렬 */
+     /* 위/아래 여백은 20px, 왼쪽은 20px 고정, 오른쪽은 남은 공간(auto)으로 설정하여 박스를 왼쪽으로 오프셋 */
+     margin: 20px auto 20px 20px;
+     margin-right: auto;
+     background: #fff;
+     border-radius: 15px;
+     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+     padding: 15px;
+     text-align: center; /* 내부 내용 중앙 정렬 */
     }
     .user-submit-section h2 {
       color: #4caf50;
@@ -264,12 +273,16 @@
     }
     /* 관리자 제출 섹션 */
     .admin-submit-section {
-      margin: 20px auto;
+      width: 100%;
       max-width: 600px;
-      background: #fff;
-      border-radius: 15px;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-      padding: 15px;
+     /* 위/아래 여백은 20px, 왼쪽은 20px 고정, 오른쪽은 남은 공간(auto)으로 설정하여 박스를 왼쪽으로 오프셋 */
+     margin: 20px auto 20px 20px;
+     margin-right: auto;
+     background: #fff;
+     border-radius: 15px;
+     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+     padding: 15px;
+     text-align: center; /* 내부 내용 중앙 정렬 */
     }
     .admin-submit-section h2 {
       color: #b33c3c;
@@ -337,14 +350,6 @@
       .admin-bottom-row input {
         width: 22%;
       }
-   /* 모바일 화면에서 너비를 조금 줄여서 여백 확보 (필요시) */
-   @media screen and (max-width: 600px) {
-     .user-submit-section,
-     .admin-submit-section {
-       width: 95%;
-       margin: 20px auto;
-  }
-}
     }
   </style>
 </head>
