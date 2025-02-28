@@ -1,28 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  
-  <!-- SEO 최적화를 위한 메타 태그 -->
   <title>뿌동숲 시세표</title>
-  <meta name="description" content="뿌동숲 시세표는 최신 아이템 시세와 사용자 제안 기능을 제공하는 사이트입니다. 재료, 아이템, 레시피 등 다양한 카테고리의 정보를 확인해보세요." />
-  <meta name="keywords" content="뿌동숲, 시세표, 아이템, 재료, 레시피, 제안, 관리자" />
-  
-  <!-- Open Graph (SNS 공유용) -->
-  <meta property="og:title" content="뿌동숲 시세표" />
-  <meta property="og:description" content="뿌동숲 시세표에서 최신 아이템 가격 정보를 확인해보세요." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://yourgithubusername.github.io/yourrepository" />
-  <meta property="og:image" content="https://yourgithubusername.github.io/yourrepository/path/to/yourimage.png" />
-  
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="뿌동숲 시세표" />
-  <meta name="twitter:description" content="뿌동숲 시세표에서 다양한 아이템 시세 정보를 확인하세요." />
-  <meta name="twitter:image" content="https://yourgithubusername.github.io/yourrepository/path/to/yourimage.png" />
-
   <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
   <style>
@@ -333,7 +314,6 @@
       }
       .user-submit-section, .admin-submit-section {
         width: 95%;
-        margin: 20px 0 20px 5%;  /* 위/아래 20px, 왼쪽 5%, 오른쪽 0 */
       }
       table, th, td {
         font-size: 0.8em;
@@ -614,14 +594,11 @@
       else if(currentDivision){
         result = result.filter(item => item.division === currentDivision);
       }
-      // 검색어 필터 (이름과 분류 모두 검색)
+      // 검색어 필터 (검색어가 있을 경우)
       const searchText = document.getElementById("search").value.trim().toLowerCase();
       if(searchText){
         const normalizedSearchText = removeAllSpaces(searchText);
-        result = result.filter(item =>
-          removeAllSpaces(item.name).includes(normalizedSearchText) ||
-          (item.division && removeAllSpaces(item.division).includes(normalizedSearchText))
-        );
+        result = result.filter(item => removeAllSpaces(item.name).includes(normalizedSearchText));
       }
       if(result.length === 0){
         document.querySelector("#itemTable tbody").innerHTML = '<tr><td colspan="5">검색/필터 결과가 없습니다.</td></tr>';
@@ -1181,4 +1158,3 @@
   </script>
 </body>
 </html>
-
