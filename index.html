@@ -91,7 +91,7 @@
     }
     .menu ul {
       display: grid;
-      grid-template-columns: repeat(2, 1fr); 
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       list-style: none;
       margin: 0;
@@ -284,7 +284,6 @@
       gap: 10px;
       margin-bottom: 10px;
     }
-    /* 데스크탑 스타일 */
     .admin-top-row select {
       width: 40%;
     }
@@ -300,7 +299,7 @@
     .admin-bottom-row input#adminPassword {
       width: 20%;
     }
-    /* 모바일 스타일: 선택창이 한 줄에 들어가도록 조정 */
+    /* 모바일 스타일 */
     @media screen and (max-width: 600px) {
       .container {
         width: 95%;
@@ -319,27 +318,23 @@
       table, th, td {
         font-size: 0.8em;
       }
-      /* 모바일에서 사용자 제출 섹션 입력 필드 한 줄 배치 */
       .user-item-inputs {
         flex-wrap: nowrap;
       }
       .user-item-inputs input {
         width: 28%;
       }
-      /* 모바일에서 관리자 제출 섹션: 선택창을 한 줄에 */
       .admin-top-row {
         flex-wrap: nowrap;
       }
       .admin-top-row select {
         width: 45%;
       }
-      /* 모바일에서 관리자 하단 입력란 전체 폭 조정 */
       .admin-bottom-row {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
       }
       .admin-bottom-row input {
-        width: 90%;
-        margin-bottom: 5px;
+        width: 22%;
       }
     }
   </style>
@@ -356,8 +351,8 @@
         <div class="bar"></div>
         <div class="bar"></div>
       </div>
-      <input type="text" id="search" placeholder="아이템 이름 검색" onkeyup="applyFilter()">
-      <button class="search-button" onclick="applyFilter()">
+      <input type="text" id="search" placeholder="아이템 이름 검색" onkeyup="filterItems()">
+      <button class="search-button" onclick="filterItems()">
         <i class="fas fa-search"></i>
       </button>
     </div>
@@ -388,6 +383,7 @@
         </tr>
       </thead>
       <tbody>
+        <!-- 초기 상태: 아무것도 표시하지 않음 -->
         <tr><td colspan="5">검색/필터 결과가 표시됩니다.</td></tr>
       </tbody>
     </table>
@@ -536,7 +532,7 @@
       }
       return false;
     }
-    // 관리자용 아이템은 Firestore "userItems" 컬렉션에 저장
+    // Firestore의 관리자용 아이템("userItems") 업데이트
     let userItems = [];
     db.collection("userItems")
       .orderBy("createdAt", "asc")
@@ -545,36 +541,86 @@
         snapshot.forEach(doc => {
           userItems.push(doc.data());
         });
-        if(document.getElementById("search").value.trim() === ""){
-          currentItems = [...staticItems, ...userItems];
-          displayItems(currentItems);
+        // 초기 상태: 검색창과 메뉴 필터 모두 비어 있을 때는 아무것도 표시하지 않음.
+        if(document.getElementById("search").value.trim() === "" && currentCategory === "") {
+          document.querySelector("#itemTable tbody").innerHTML = '<tr><td colspan="5">검색/필터 결과가 표시됩니다.</td></tr>';
+          document.getElementById("paginationControls").innerHTML = "";
+          currentItems = [];
+        } else {
+          applyFilter();
         }
       });
     function filterItems() {
       const searchText = document.getElementById("search").value.toLowerCase().trim();
       currentPage = 1;
-      if (!searchText) {
-        currentItems = [...staticItems, ...userItems];
-        displayItems(currentItems);
+      // 만약 검색어가 없다면 메뉴 필터(현재 선택된 카테고리/분류)를 그대로 적용
+      if (!searchText && currentCategory === "") {
+        document.querySelector("#itemTable tbody").innerHTML = '<tr><td colspan="5">검색/필터 결과가 표시됩니다.</td></tr>';
+        document.getElementById("paginationControls").innerHTML = "";
+        currentItems = [];
         return;
       }
-      const normalizedSearchText = removeAllSpaces(searchText);
-      let filtered = [...staticItems, ...userItems].filter(item =>
-        removeAllSpaces(item.name).includes(normalizedSearchText)
-      );
-      if (filtered.length === 0) {
-        document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="5">검색 결과가 없습니다.</td></tr>`;
+      applyFilter();
+    }
+    function applyFilter(){
+      currentPage = 1;
+      // 모든 아이템에서 시작
+      let result = [...staticItems, ...userItems];
+      // 메뉴에서 카테고리가 선택되었으면 필터링
+      if(currentCategory !== ""){
+        result = result.filter(item => item.category === currentCategory);
+      }
+      // 재료 카테고리 특별 조건
+      if(currentCategory === "재료"){
+        if(currentDivision === "자연"){
+          result = result.filter(item => item.division === "자연" || item.division === "꽃");
+        } else if(currentDivision === "이벤트"){
+          result = result.filter(item => ["부옥", "머메이드", "카니발", "이스터", "죠니", "웨딩", "할로윈"].includes(item.division));
+        } else if(currentDivision){
+          result = result.filter(item => item.division === currentDivision);
+        }
+      }
+      // 아이템 카테고리 특별 조건
+      else if(currentCategory === "아이템"){
+        if(currentDivision === "기타"){
+          result = result.filter(item => item.division === "엄마" || item.division === "재활용");
+        } else if(currentDivision === "이벤트"){
+          result = result.filter(item => item.division === "머메이드");
+        } else if(currentDivision){
+          result = result.filter(item => item.division === currentDivision);
+        }
+      }
+      // 그 외, 분류가 선택되었으면 일반 필터
+      else if(currentDivision){
+        result = result.filter(item => item.division === currentDivision);
+      }
+      // 검색어 필터 (검색어가 있을 경우)
+      const searchText = document.getElementById("search").value.trim().toLowerCase();
+      if(searchText){
+        const normalizedSearchText = removeAllSpaces(searchText);
+        result = result.filter(item => removeAllSpaces(item.name).includes(normalizedSearchText));
+      }
+      if(result.length === 0){
+        document.querySelector("#itemTable tbody").innerHTML = '<tr><td colspan="5">검색/필터 결과가 없습니다.</td></tr>';
         document.getElementById("paginationControls").innerHTML = "";
         currentItems = [];
       } else {
-        currentItems = filtered;
+        currentItems = result;
         displayItems(currentItems);
       }
     }
     function showCategory(catName) {
       document.getElementById("search").value = "";
+      currentCategory = catName;
+      currentDivision = "";
       currentPage = 1;
-      let filtered = [...staticItems, ...userItems].filter(item => item.category === catName);
+      // "전체" 메뉴는 currentCategory == "" (즉, 모든 아이템)
+      let filtered = [];
+      if(catName === ""){
+        filtered = [...staticItems, ...userItems];
+      } else {
+        filtered = [...staticItems, ...userItems].filter(item => item.category === catName);
+      }
       if (filtered.length === 0) {
         document.querySelector("#itemTable tbody").innerHTML = `<tr><td colspan="5">${catName} 카테고리에 해당하는 아이템이 없습니다.</td></tr>`;
         document.getElementById("paginationControls").innerHTML = "";
@@ -583,7 +629,7 @@
         currentItems = filtered;
         displayItems(currentItems);
       }
-      toggleMenu();
+      toggleCategoryMenu();
     }
     function displayItems(itemsArray) {
       const tableBody = document.querySelector("#itemTable tbody");
@@ -667,14 +713,301 @@
       });
     }
     function pickDivision(div){
-      currentDivision = (div === "전체보기") ? "" : div;
+      currentDivision = div;
       document.getElementById("divisionMenu").classList.remove("show");
       applyFilter();
     }
     
-    /* staticItems: (최종 staticItems 데이터는 기존 데이터를 참조) */
+    /* staticItems: 오직 아래 제공한 아이템들만 포함 */
     const staticItems = [
-      // 이전 최종 staticItems 데이터가 이곳에 포함됩니다.
+      // 재료 – 자연 및 꽃
+      { category:"재료", division:"자연", name:"목재", quantity:"1셋(30개)", price:"2마일" },
+      { category:"재료", division:"자연", name:"단단한 목재", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"부드러운 목재", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"대나무 토막", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"죽순", quantity:"1셋(10개)", price:"2마일" },
+      { category:"재료", division:"자연", name:"돌", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"점토", quantity:"1셋(30개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"철광석", quantity:"1셋(30개)", price:"2마일" },
+      { category:"재료", division:"자연", name:"금광석", quantity:"1셋(30개)", price:"20마일" },
+      { category:"재료", division:"자연", name:"잡초", quantity:"1셋(99개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"벌집", quantity:"1셋(10개)", price:"2마일" },
+      { category:"재료", division:"자연", name:"나뭇가지", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"빛이끼", quantity:"1셋(50개)", price:"5마일" },
+      { category:"재료", division:"자연", name:"덩굴", quantity:"1셋(30개)", price:"5마일" },
+      { category:"재료", division:"자연", name:"사과", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"복숭아", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"오렌지", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"체리", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"배", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"야자열매", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"자패", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"산호", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"방석고둥", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"거거", quantity:"1셋(10개)", price:"2마일" },
+      { category:"재료", division:"자연", name:"연잎성게", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"뮤렉스조개", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"바지락", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"소라고둥", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"밀", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"당근", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"토마토", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"사탕수수", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"감자", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"주황색 호박", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"초록색 호박", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"노란 호박", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"자연", name:"하얀 호박", quantity:"1셋(10개)", price:"1마일" },
+      // 재료 – 꽃
+      { category:"재료", division:"꽃", name:"일반 모종", quantity:"10개", price:"1마일" },
+      { category:"재료", division:"꽃", name:"교배 모종", quantity:"10개", price:"2마일" },
+      { category:"재료", division:"꽃", name:"금장미 모종", quantity:"1개", price:"1마일" },
+      { category:"재료", division:"꽃", name:"은방울꽃 모종", quantity:"5송이", price:"2마일" },
+      { category:"재료", division:"꽃", name:"초록국화 꽃잎", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"꽃", name:"금장미 꽃잎", quantity:"1셋(20개)", price:"1마일" },
+      // 재료 – 기타
+      { category:"재료", division:"기타", name:"떡밥", quantity:"10셋(100개)", price:"20~25마일" },
+      { category:"재료", division:"기타", name:"빈 통조림 캔", quantity:"1개", price:"1마일" },
+      { category:"재료", division:"기타", name:"타이어", quantity:"1개", price:"1마일" },
+      { category:"재료", division:"기타", name:"장화", quantity:"1개", price:"1마일" },
+      { category:"재료", division:"기타", name:"포장지", quantity:"1셋(10개)", price:"1마일" },
+      { category:"재료", division:"기타", name:"기념품 초콜릿", quantity:"1셋(10개)", price:"3마일" },
+      { category:"재료", division:"기타", name:"꿈의 벨 교환권", quantity:"1셋(10개)", price:"10~20마일" },
+      { category:"재료", division:"기타", name:"리폼키트", quantity:"1셋(50개)", price:"2마일" },
+      { category:"재료", division:"기타", name:"밀가루", quantity:"1셋(50개)", price:"2마일" },
+      { category:"재료", division:"기타", name:"통밀가루", quantity:"1셋(50개)", price:"2마일" },
+      { category:"재료", division:"기타", name:"설탕", quantity:"1셋(50개)", price:"2마일" },
+      { category:"재료", division:"기타", name:"흑설탕", quantity:"1셋(50개)", price:"2마일" },
+      { category:"재료", division:"기타", name:"공사용 음식", quantity:"40개", price:"20마일" },
+      // 재료 – 계절
+      { category:"재료", division:"계절", name:"벚꽃잎", quantity:"1셋(10개)", price:"5마일" },
+      { category:"재료", division:"계절", name:"봄의 대나무", quantity:"1셋(30개)", price:"5마일" },
+      { category:"재료", division:"계절", name:"여름 조개껍데기", quantity:"1셋(10개)", price:"2마일" },
+      { category:"재료", division:"계절", name:"가는 버섯", quantity:"1셋(10개)", price:"5마일" },
+      { category:"재료", division:"계절", name:"넓은 버섯", quantity:"1셋(10개)", price:"5마일" },
+      { category:"재료", division:"계절", name:"둥근 버섯", quantity:"1셋(10개)", price:"5마일" },
+      { category:"재료", division:"계절", name:"희귀버섯", quantity:"1셋(10개)", price:"10마일" },
+      { category:"재료", division:"계절", name:"단풍잎", quantity:"1셋(10개)", price:"5마일" },
+      { category:"재료", division:"계절", name:"도토리", quantity:"1셋(30개)", price:"10마일" },
+      { category:"재료", division:"계절", name:"솔방울", quantity:"1셋(10개)", price:"10마일" },
+      { category:"재료", division:"계절", name:"눈의 결정", quantity:"1셋(10개)", price:"5마일" },
+      { category:"재료", division:"계절", name:"커다란 눈의 결정", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"계절", name:"빨간 오너먼트", quantity:"1셋(30개)", price:"2마일" },
+      { category:"재료", division:"계절", name:"파란 오너먼트", quantity:"1셋(30개)", price:"2마일" },
+      { category:"재료", division:"계절", name:"금 오너먼트", quantity:"1셋(30개)", price:"5마일" },
+      // 재료 – 이벤트
+      { category:"재료", division:"부옥", name:"별의 조각", quantity:"1셋(10개)", price:"2마일" },
+      { category:"재료", division:"부옥", name:"커다란 별의 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"염소자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"물병자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"물고기자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"양자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"황소자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"쌍둥이자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"게자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"사자자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"처녀자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"천칭자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"전갈자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      { category:"재료", division:"부옥", name:"사수자리 조각", quantity:"1셋(10개)", price:"20마일" },
+      // 재료 – 머메이드, 카니발, 이스터, 죠니, 웨딩, 할로윈
+      { category:"재료", division:"머메이드", name:"진주", quantity:"1셋(30개)", price:"20마일" },
+      { category:"재료", division:"카니발", name:"빨간색 깃털", quantity:"1셋(3개)", price:"1마일" },
+      { category:"재료", division:"카니발", name:"보라색 깃털", quantity:"1셋(3개)", price:"1마일" },
+      { category:"재료", division:"카니발", name:"초록색 깃털", quantity:"1셋(3개)", price:"1마일" },
+      { category:"재료", division:"카니발", name:"파란색 깃털", quantity:"1셋(3개)", price:"1마일" },
+      { category:"재료", division:"카니발", name:"무지개 깃털", quantity:"1개", price:"2마일~3마일" },
+      
+      // 아이템 – 기존 데이터 및 토용 추가
+      { category:"아이템", division:"완제품", name:"금 삽", quantity:"1개", price:"2마일" },
+      { category:"아이템", division:"완제품", name:"금도끼", quantity:"1개", price:"2마일" },
+      { category:"아이템", division:"완제품", name:"금 낚싯대", quantity:"1개", price:"2마일" },
+      { category:"아이템", division:"완제품", name:"금새총", quantity:"1개", price:"2마일" },
+      { category:"아이템", division:"완제품", name:"금 물뿌리개", quantity:"1개", price:"2마일" },
+      { category:"아이템", division:"완제품", name:"히어로 로봇", quantity:"1개", price:"20~30마일" },
+      { category:"아이템", division:"마일템", name:"간이창고", quantity:"1개", price:"10마일" },
+      { category:"아이템", division:"마일템", name:"ATM", quantity:"1개", price:"10마일" },
+      { category:"아이템", division:"마일템", name:"저장탑", quantity:"1개", price:"10마일" },
+      { category:"아이템", division:"마일템", name:"퍼걸러", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"마일템", name:"소화전", quantity:"1개", price:"3마일" },
+      { category:"아이템", division:"마일템", name:"가로등", quantity:"1개", price:"3마일" },
+      { category:"아이템", division:"마일템", name:"소박한 파티 라이트", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"마일템", name:"풍차", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"마일템", name:"서양식 정자", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"마일템", name:"정자", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"마일템", name:"정글짐", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"미술품", name:"가라앉는 명화", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"미술품", name:"가치있는 명화", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"미술품", name:"근사한 명화", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"미술품", name:"느낌이 좋은 명화", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"미술품", name:"대단한 명화", quantity:"1개", price:"5마일" },
+      { category:"아이템", division:"미술품", name:"뛰어난 명화", quantity:"1개", price:"5마일" },
+      
+      // 토용 추가 (새로 추가)
+      { category:"아이템", division:"토용", name:"가면 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"가시 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"꿀꿀 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"끼익 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"둠칫 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"둥둥 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"디링 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"딩동 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"딸깍 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"땡그랑 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"또록 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"똑딱 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"뚱땅 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"띠롱 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"마스터 토용", quantity:"1개", price:"60마일" },
+      { category:"아이템", division:"토용", name:"멍멍 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"방울 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"베이비 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"베이스 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"벨 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"뵤옹 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"부웅 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"뽀삐 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"뽁 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"뿌우 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"삐뽀 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"삐융 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"쉐킷 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"양철 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"에코 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"우와와 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"지직 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"콰삭 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"툭툭 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"푸르르 토용", quantity:"1개", price:"1마일" },
+      { category:"아이템", division:"토용", name:"후후 토용", quantity:"1개", price:"1마일" },
+      
+      // 올클 – (분류 변경: "올클 레시피"와 "올클 아이템" 띄어쓰기 적용)
+      { category:"올클", division:"올클 레시피", name:"벚꽃 레시피", quantity:"15종", price:"400마일" },
+      { category:"올클", division:"올클 레시피", name:"여름 조개 레시피", quantity:"20종", price:"400마일" },
+      { category:"올클", division:"올클 레시피", name:"머메이드 레시피", quantity:"15종", price:"400마일" },
+      { category:"올클", division:"올클 레시피", name:"나무열매 레시피", quantity:"10종", price:"400마일" },
+      { category:"올클", division:"올클 레시피", name:"버섯 레시피", quantity:"12종", price:"400마일" },
+      { category:"올클", division:"올클 레시피", name:"단풍 레시피", quantity:"10종", price:"400마일" },
+      { category:"올클", division:"올클 레시피", name:"얼음 레시피", quantity:"26종", price:"1200마일" },
+      { category:"올클", division:"올클 레시피", name:"이스터 레시피", quantity:"20종", price:"300마일" },
+      { category:"올클", division:"올클 레시피", name:"할로윈 레시피", quantity:"18종", price:"300마일" },
+      { category:"올클", division:"올클 레시피", name:"부옥이 레시피", quantity:"49종", price:"600마일" },
+      { category:"올클", division:"올클 레시피", name:"12궁 레시피", quantity:"부옥 제외", price:"150마일" },
+      { category:"올클", division:"올클 레시피", name:"크리스마스 오너먼트 레시피", quantity:"20종", price:"400마일" },
+      { category:"올클", division:"올클 레시피", name:"봄 대나무 레시피", quantity:"16종", price:"400마일" },
+      { category:"올클", division:"올클 레시피", name:"덩굴&빛이끼 레시피", quantity:"40종", price:"350~400마일" },
+      { category:"올클", division:"올클 레시피", name:"금도구 레시피", quantity:"4종", price:"620마일" },
+      { category:"올클", division:"올클 레시피", name:"꽃 리스 & 화환 레시피", quantity:"52종", price:"650~700마일" },
+      { category:"올클", division:"올클 아이템", name:"감정 화석", quantity:"73종", price:"80마일" },
+      { category:"올클", division:"올클 아이템", name:"미술품", quantity:"43종", price:"400마일" },
+      { category:"올클", division:"올클 아이템", name:"토용", quantity:"36종", price:"100마일" },
+      { category:"올클", division:"올클 아이템", name:"음악", quantity:"107종", price:"300마일" },
+      { category:"올클", division:"올클 아이템", name:"NPC 액자", quantity:"62종", price:"1600마일" },
+      
+      // 레시피 – 일반, 마일교환, 해피홈, 계절 등 및 추가 항목
+      { category: "레시피", division: "금도구", name: "금 잠자리채 레시피", quantity: "1개", price: "200마일" },
+      { category: "레시피", division: "금도구", name: "금 삽 레시피", quantity: "1개", price: "200마일" },
+      { category: "레시피", division: "금도구", name: "금 낚싯대 레시피", quantity: "1개", price: "200마일" },
+      { category: "레시피", division: "금도구", name: "금 새총 레시피", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "부옥", name: "게자리 테이블", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "국화 지팡이", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "나뭇가지 지팡이", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "노란 별님 러그", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "달", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "달착륙선", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "달표면 바닥", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "로켓", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "물고기자리 램프", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "물병자리 항아리", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "백합 지팡이", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "별 모양 가랜드", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "별 무늬", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "별 시계", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "별 조명", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "별 지팡이", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "별님 머리", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "별무늬 미니백", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "별이 빛나는 벽", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "별이 빛나는 러그", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "사수자리 활", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "사자자리 장식", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "쌍둥이자리 옷장", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "아네모네 지팡이", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "양자리 목마", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "염소자리 모형", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "우주 비행사", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "우주선 바닥", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "우주선 벽", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "부옥", name: "우주왕복선", quantity: "1개", price: "10~15마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 바닥", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 수납장", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 침대", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 쉘프", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 램프", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 벽지", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 화장대", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 벽시계", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 테이블", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 소파", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 파티션", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 옷장", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 체어", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "머메이드", name: "머메이드 러그", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "일반", name: "돈다발 레시피", quantity: "1개", price: "20~30마일" },
+      { category: "레시피", division: "일반", name: "유인용 오리 레시피", quantity: "1개", price: "2마일" },
+      { category: "레시피", division: "마일교환", name: "목제 간이 창고 레시피", quantity: "1개", price: "10마일" },
+      { category: "레시피", division: "해피홈", name: "야광 벽 스티커 레시피", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "계절", name: "얼음 미니 눈사람 레시피", quantity: "1개", price: "120마일" },
+      { category: "레시피", division: "계절", name: "막대 아이스크림 레시피", quantity: "1개", price: "100마일" },
+      { category: "레시피", division: "계절", name: "초록 낙엽 레시피", quantity: "1개", price: "30마일" },
+      { category: "레시피", division: "일반", name: "금장미 리스 레시피", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "일반", name: "국화 화관 레시피", quantity: "1개", price: "10마일" },
+      { category: "레시피", division: "늘봉", name: "낮은 나무 울타리 레시피", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "계절", name: "넓은 버섯 레시피", quantity: "1개", price: "5마일" },
+      { category: "레시피", division: "계절", name: "버섯 램프 레시피", quantity: "1개", price: "30마일" },
+      { category: "레시피", division: "계절", name: "벚꽃 미니백 레시피", quantity: "1개", price: "30마일" },
+      { category: "레시피", division: "계절", name: "얼음 테이블 레시피", quantity: "1개", price: "30마일" },
+      { category: "레시피", division: "계절", name: "초록 낙엽 레시피", quantity: "1개", price: "30마일" },
+      { category: "레시피", division: "일반", name: "큐트 장미 화관 레시피", quantity: "1개", price: "10마일" },
+      { category: "레시피", division: "일반", name: "큐트 튤립 리스 레시피", quantity: "1개", price: "10마일" },
+      { category: "레시피", division: "일반", name: "푸른 장미 화관 레시피", quantity: "1개", price: "20마일" },
+      { category: "레시피", division: "이스터", name: "이스터 울타리 레시피", quantity: "1개", price: "5마일" },
+      
+      // 기타
+      { category: "기타", division: "만지작", name: "신템 전색", quantity: "2143개", price: "200마일" },
+      { category: "기타", division: "만지작", name: "신템 단색", quantity: "497개", price: "70마일" },
+      { category: "기타", division: "만지작", name: "구템 전색", quantity: "2442개", price: "200마일" },
+      { category: "기타", division: "만지작", name: "구템 단색", quantity: "1022개", price: "80마일" },
+      { category: "기타", division: "만지작", name: "신의류", quantity: "538개", price: "80~100마일" },
+      { category: "기타", division: "만지작", name: "구의류", quantity: "4445개", price: "300마일" },
+      { category: "기타", division: "만지작", name: "비매품", quantity: "3926개", price: "400마일" },
+      { category: "기타", division: "알바", name: "꽃 뽑기", quantity: "소량", price: "10~15마일" },
+      { category: "기타", division: "알바", name: "꽃 뽑기", quantity: "대량", price: "30~40마일" },
+      { category: "기타", division: "알바", name: "꽃 옮기기", quantity: "소량", price: "20~25마일" },
+      { category: "기타", division: "알바", name: "꽃 옮기기", quantity: "대량", price: "30~40마일" },
+      { category: "기타", division: "알바", name: "잡초 뽑기", quantity: "소량", price: "10~20마일" },
+      { category: "기타", division: "알바", name: "잡초 뽑기", quantity: "대량", price: "20~30마일" },
+      { category: "기타", division: "알바", name: "잡초 심기", quantity: "소량", price: "10~15마일" },
+      { category: "기타", division: "알바", name: "잡초 심기", quantity: "대량", price: "30~40마일" },
+      { category: "기타", division: "알바", name: "나무 뽑기", quantity: "소량", price: "10~20마일" },
+      { category: "기타", division: "알바", name: "나무 뽑기", quantity: "대량", price: "30~40마일" },
+      { category: "기타", division: "알바", name: "나무 옮기기", quantity: "소량", price: "20~30마일" },
+      { category: "기타", division: "알바", name: "나무 옮기기", quantity: "대량", price: "30~40마일" },
+      { category: "기타", division: "알바", name: "카탈템 99,000원 이하", quantity: "1개", price: "1마일" },
+      { category: "기타", division: "알바", name: "카탈템 99,000원 이상", quantity: "1개", price: "2마일" },
+      { category: "기타", division: "알바", name: "카탈 알바", quantity: "100개", price: "150~200마일" },
+      { category: "기타", division: "편의", name: "공사용 음식", quantity: "40개", price: "40마일" },
+      { category: "기타", division: "편의", name: "39번 친 엉성한 도끼", quantity: "40개", price: "35~40마일" },
+      { category: "기타", division: "편의", name: "99,000벨", quantity: "1덩", price: "2마일" },
+      { category: "기타", division: "편의", name: "포장된 과일", quantity: "40개", price: "10마일" },
+      { category: "기타", division: "산리오", name: "시나모롤 세트", quantity: "15개", price: "15마일" },
+      { category: "기타", division: "산리오", name: "헬로키티 세트", quantity: "15개", price: "15마일" },
+      { category: "기타", division: "산리오", name: "폼폼푸린 세트", quantity: "15개", price: "15마일" },
+      { category: "기타", division: "산리오", name: "시나모롤 세트", quantity: "15개", price: "15마일" },
+      { category: "기타", division: "산리오", name: "리틀트윈스타 세트", quantity: "16개", price: "15마일" },
+      { category: "기타", division: "산리오", name: "시나모롤 세트", quantity: "15개", price: "15마일" },
+      { category: "기타", division: "산리오", name: "마이멜로디 세트", quantity: "14개", price: "15마일" },
+      { category: "기타", division: "산리오", name: "케로케로피 세트", quantity: "16개", price: "15마일" }
     ];
   </script>
 
@@ -784,7 +1117,7 @@
           resultDiv.textContent = "아이템 추가 중 오류가 발생했습니다.";
         });
       } else {
-        // 삭제 요청 (수량, 시세를 비워둔 상태에서 삭제용 비밀번호 입력)
+        // 삭제 요청 (수량, 시세 입력 없이 삭제용 비밀번호)
         if (password !== "0998dstar") {
           resultDiv.style.color = "red";
           resultDiv.textContent = "삭제용 비밀번호가 올바르지 않습니다.";
