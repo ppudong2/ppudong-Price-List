@@ -202,24 +202,15 @@
     footer a:hover {
       text-decoration: underline;
     }
-    /* 전역 box-sizing 설정 */
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
     /* 사용자 제출 섹션 */
     .user-submit-section {
-      width: 100%;
+      margin: 20px auto;
       max-width: 600px;
-     /* 위/아래 여백은 20px, 왼쪽은 20px 고정, 오른쪽은 남은 공간(auto)으로 설정하여 박스를 왼쪽으로 오프셋 */
-     margin: 20px auto 20px 20px;
-     margin-right: auto;
-     background: #fff;
-     border-radius: 15px;
-     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-     padding: 15px;
-     text-align: center; /* 내부 내용 중앙 정렬 */
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      text-align: center;
     }
     .user-submit-section h2 {
       color: #4caf50;
@@ -273,16 +264,13 @@
     }
     /* 관리자 제출 섹션 */
     .admin-submit-section {
-      width: 100%;
+      margin: 20px auto;
       max-width: 600px;
-     /* 위/아래 여백은 20px, 왼쪽은 20px 고정, 오른쪽은 남은 공간(auto)으로 설정하여 박스를 왼쪽으로 오프셋 */
-     margin: 20px auto 20px 20px;
-     margin-right: auto;
-     background: #fff;
-     border-radius: 15px;
-     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-     padding: 15px;
-     text-align: center; /* 내부 내용 중앙 정렬 */
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      text-align: center;
     }
     .admin-submit-section h2 {
       color: #b33c3c;
@@ -326,8 +314,14 @@
         width: 90%;
         left: 5%;
       }
-      .user-submit-section, .admin-submit-section {
+      /* 모바일에서 사용자 제출 섹션, 관리자 제출 섹션 오프셋 적용 */
+      .user-submit-section,
+      .admin-submit-section {
         width: 95%;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        margin-left: 5%;
+        margin-right: auto;
       }
       table, th, td {
         font-size: 0.8em;
