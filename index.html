@@ -314,14 +314,11 @@
         width: 90%;
         left: 5%;
       }
-      /* 모바일에서 사용자 제출 섹션, 관리자 제출 섹션 오프셋 적용 */
+      /* 모바일에서 사용자 제출 섹션, 관리자 제출 섹션 왼쪽 오프셋 적용 */
       .user-submit-section,
       .admin-submit-section {
         width: 95%;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        margin-left: 5%;
-        margin-right: auto;
+        margin: 20px 0 20px 5%;  /* 위/아래 여백 20px, 왼쪽 5%, 오른쪽 0 */
       }
       table, th, td {
         font-size: 0.8em;
@@ -602,11 +599,14 @@
       else if(currentDivision){
         result = result.filter(item => item.division === currentDivision);
       }
-      // 검색어 필터 (검색어가 있을 경우)
+      // 검색어 필터 (이름과 분류 모두 검색)
       const searchText = document.getElementById("search").value.trim().toLowerCase();
       if(searchText){
         const normalizedSearchText = removeAllSpaces(searchText);
-        result = result.filter(item => removeAllSpaces(item.name).includes(normalizedSearchText));
+        result = result.filter(item =>
+          removeAllSpaces(item.name).includes(normalizedSearchText) ||
+          (item.division && removeAllSpaces(item.division).includes(normalizedSearchText))
+        );
       }
       if(result.length === 0){
         document.querySelector("#itemTable tbody").innerHTML = '<tr><td colspan="5">검색/필터 결과가 없습니다.</td></tr>';
