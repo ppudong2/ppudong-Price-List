@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <!-- 여러분의 GitHub Pages 주소를 넣으세요 -->
     <loc>https://ppudong2.github.io/ppudong-Price-List/</loc>
-    <!-- 페이지 수정 날짜 (예시) -->
     <lastmod>2025-02-28</lastmod>
     <priority>1.0</priority>
   </url>
